@@ -1,0 +1,9 @@
+#ifndef _LIGHTTPD_CPP_BASE_H_
+#define _LIGHTTPD_CPP_BASE_H_
+
+extern "C"
+{
+#	include "base_compat.h"
+}
+
+#endif
