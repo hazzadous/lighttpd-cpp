@@ -5,7 +5,7 @@
 #ifndef _LIGHTTPD_MOD_BLANK_HPP_
 #define _LIGHTTPD_MOD_BLANK_HPP_
 
-#include "plugin.hpp"
+#include <lighttpd-cpp/plugin.hpp>
 
 #include <boost/mpl/list.hpp>
 #include <string>
