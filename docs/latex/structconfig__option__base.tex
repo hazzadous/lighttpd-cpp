@@ -1,0 +1,83 @@
+\hypertarget{structconfig__option__base}{
+\section{config\_\-option\_\-base Struct Reference}
+\label{structconfig__option__base}\index{config\_\-option\_\-base@{config\_\-option\_\-base}}
+}
+{\tt \#include $<$datatype\_\-helpers.hpp$>$}
+
+Inherited by config\_\-option$<$ OptionType, ConfigScopeType, OptionTraits $>$.
+
+\subsection*{Public Types}
+\begin{CompactItemize}
+\item 
+\hypertarget{structconfig__option__base_b71046712f2629513bf074eb030dc3b7}{
+typedef std::vector$<$ \hyperlink{structconfig__option__base}{config\_\-option\_\-base} $\ast$ $>$ \textbf{registry\_\-type}}
+\label{structconfig__option__base_b71046712f2629513bf074eb030dc3b7}
+
+\item 
+\hypertarget{structconfig__option__base_23ce095890ffe80c8bc31f7cb90d3f4f}{
+typedef registry\_\-type::iterator \textbf{registry\_\-iterator}}
+\label{structconfig__option__base_23ce095890ffe80c8bc31f7cb90d3f4f}
+
+\item 
+\hypertarget{structconfig__option__base_badbd3acf8284e0cdb3a0e637498c6e7}{
+typedef registry\_\-type::const\_\-iterator \textbf{registry\_\-const\_\-iterator}}
+\label{structconfig__option__base_badbd3acf8284e0cdb3a0e637498c6e7}
+
+\end{CompactItemize}
+\subsection*{Public Member Functions}
+\begin{CompactItemize}
+\item 
+\hypertarget{structconfig__option__base_5f87eab8c0be092869b305fd1ef3f133}{
+\textbf{config\_\-option\_\-base} (const char $\ast$key)}
+\label{structconfig__option__base_5f87eab8c0be092869b305fd1ef3f133}
+
+\item 
+\hypertarget{structconfig__option__base_ac53aa895594570d1707c302909d266c}{
+virtual handler\_\-t \textbf{set\_\-defaults} (const server \&srv)=0}
+\label{structconfig__option__base_ac53aa895594570d1707c302909d266c}
+
+\item 
+\hypertarget{structconfig__option__base_c2eb1e7e5bbc509803cd19ffeeda331e}{
+virtual handler\_\-t \textbf{set\_\-defaults} ()=0}
+\label{structconfig__option__base_c2eb1e7e5bbc509803cd19ffeeda331e}
+
+\end{CompactItemize}
+\subsection*{Static Public Member Functions}
+\begin{CompactItemize}
+\item 
+\hypertarget{structconfig__option__base_1a33ba2de88522286bad68735ae9bb0e}{
+static handler\_\-t \textbf{set\_\-all\_\-defaults} ()}
+\label{structconfig__option__base_1a33ba2de88522286bad68735ae9bb0e}
+
+\end{CompactItemize}
+\subsection*{Public Attributes}
+\begin{CompactItemize}
+\item 
+\hypertarget{structconfig__option__base_9e1952a48dc047f2e2152b767e9d0c65}{
+const char $\ast$ \textbf{key}}
+\label{structconfig__option__base_9e1952a48dc047f2e2152b767e9d0c65}
+
+\item 
+\hypertarget{structconfig__option__base_700ece40b8a2feb8f1b8c9196660ade0}{
+const server $\ast$ \textbf{srv}}
+\label{structconfig__option__base_700ece40b8a2feb8f1b8c9196660ade0}
+
+\end{CompactItemize}
+\subsection*{Static Public Attributes}
+\begin{CompactItemize}
+\item 
+\hypertarget{structconfig__option__base_0fcfa3fa7ba3396e7dfb1b9d27970592}{
+static registry\_\-type \textbf{registry}}
+\label{structconfig__option__base_0fcfa3fa7ba3396e7dfb1b9d27970592}
+
+\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+These are classes to automate the filling of what would be the \hyperlink{structplugin__config}{plugin\_\-config} and plugin\_\-data structures if we were using C, making the following valid (or close to valid): struct mod\_\-blank \{ mod\_\-blank( ... ) : hostname( \char`\"{}some-config-tag\char`\"{} \mbox{[}, \&validator \mbox{[}, \&default\_\-setter\mbox{]} \mbox{]} ) \{ ... \} std::string\& default\_\-setter( std::string\& s )\{ ... return std::string( \char`\"{}asdf\char`\"{} ); \} config\_\-option$<$ std::string $>$ hostname; \};
+
+So a config options type is specified at runtime, and we can add new types sit on top of the lighttpd ones. i.e. we could have a network mask type, getting options from T\_\-CONFIG\_\-STRING and that checks for the correct formatting. If incorrect we could throw an exception to be caught by the set\_\-defaults handler, or we could set it to the value returned by default\_\-setter. 
+
+The documentation for this struct was generated from the following file:\begin{CompactItemize}
+\item 
+include/lighttpd-cpp/datatype\_\-helpers.hpp\end{CompactItemize}

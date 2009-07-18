@@ -1,0 +1,67 @@
+\hypertarget{structfdevents}{
+\section{fdevents Struct Reference}
+\label{structfdevents}\index{fdevents@{fdevents}}
+}
+{\tt \#include $<$fdevent.h$>$}
+
+\subsection*{Public Attributes}
+\begin{CompactItemize}
+\item 
+\hypertarget{structfdevents_9656b863d74046158c2feddd57b46f01}{
+fdevent\_\-handler\_\-t \textbf{type}}
+\label{structfdevents_9656b863d74046158c2feddd57b46f01}
+
+\item 
+\hypertarget{structfdevents_faf0c3caf9df8add00421fc912e78ad1}{
+\hyperlink{struct__fdnode}{fdnode} $\ast$$\ast$ \textbf{fdarray}}
+\label{structfdevents_faf0c3caf9df8add00421fc912e78ad1}
+
+\item 
+\hypertarget{structfdevents_02f9df92b0ad5e0c79c36fdb1bc8d0a5}{
+size\_\-t \textbf{maxfds}}
+\label{structfdevents_02f9df92b0ad5e0c79c36fdb1bc8d0a5}
+
+\item 
+\hypertarget{structfdevents_7b407184007244be141f57003a576fa0}{
+int($\ast$ \textbf{reset} )(struct \hyperlink{structfdevents}{fdevents} $\ast$ev)}
+\label{structfdevents_7b407184007244be141f57003a576fa0}
+
+\item 
+\hypertarget{structfdevents_ad6d8902685c90b08a721c508cb21a8a}{
+void($\ast$ \textbf{free} )(struct \hyperlink{structfdevents}{fdevents} $\ast$ev)}
+\label{structfdevents_ad6d8902685c90b08a721c508cb21a8a}
+
+\item 
+\hypertarget{structfdevents_4854b3245ecef3c552e8f350206453cf}{
+int($\ast$ \textbf{event\_\-add} )(struct \hyperlink{structfdevents}{fdevents} $\ast$ev, \hyperlink{structiosocket}{iosocket} $\ast$sock, int events)}
+\label{structfdevents_4854b3245ecef3c552e8f350206453cf}
+
+\item 
+\hypertarget{structfdevents_3f97a5a8f5b50218065d8bd05944881a}{
+int($\ast$ \textbf{event\_\-del} )(struct \hyperlink{structfdevents}{fdevents} $\ast$ev, \hyperlink{structiosocket}{iosocket} $\ast$sock)}
+\label{structfdevents_3f97a5a8f5b50218065d8bd05944881a}
+
+\item 
+\hypertarget{structfdevents_b02930106a57a363ef1bc1c4c3ba84a3}{
+int($\ast$ \textbf{get\_\-revents} )(struct \hyperlink{structfdevents}{fdevents} $\ast$ev, size\_\-t event\_\-count, fdevent\_\-revents $\ast$revents)}
+\label{structfdevents_b02930106a57a363ef1bc1c4c3ba84a3}
+
+\item 
+\hypertarget{structfdevents_45c7aaf2c8b8da25827f0c8a9a0e90c8}{
+int($\ast$ \textbf{poll} )(struct \hyperlink{structfdevents}{fdevents} $\ast$ev, int timeout\_\-ms)}
+\label{structfdevents_45c7aaf2c8b8da25827f0c8a9a0e90c8}
+
+\item 
+\hypertarget{structfdevents_8f9881ac88d76f35a2160903c1a839ad}{
+int($\ast$ \textbf{fcntl\_\-set} )(struct \hyperlink{structfdevents}{fdevents} $\ast$ev, int fd)}
+\label{structfdevents_8f9881ac88d76f35a2160903c1a839ad}
+
+\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+fd-event handler for select(), poll() and rt-signals on Linux 2.4 
+
+The documentation for this struct was generated from the following file:\begin{CompactItemize}
+\item 
+include/lighttpd/fdevent.h\end{CompactItemize}

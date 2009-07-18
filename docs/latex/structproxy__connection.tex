@@ -1,0 +1,86 @@
+\hypertarget{structproxy__connection}{
+\section{proxy\_\-connection Struct Reference}
+\label{structproxy__connection}\index{proxy\_\-connection@{proxy\_\-connection}}
+}
+{\tt \#include $<$mod\_\-proxy\_\-core\_\-pool.h$>$}
+
+\subsection*{Public Attributes}
+\begin{CompactItemize}
+\item 
+\hypertarget{structproxy__connection_76aef07b0324954dbd275c0051803379}{
+\hyperlink{structiosocket}{iosocket} $\ast$ \textbf{sock}}
+\label{structproxy__connection_76aef07b0324954dbd275c0051803379}
+
+\item 
+\hypertarget{structproxy__connection_7dfb4dd4197ed0ceb6e01779526e3361}{
+unsigned short \textbf{request\_\-count}}
+\label{structproxy__connection_7dfb4dd4197ed0ceb6e01779526e3361}
+
+\item 
+\hypertarget{structproxy__connection_76822a8c31421dff99d2f0f130eae548}{
+time\_\-t \textbf{last\_\-read}}
+\label{structproxy__connection_76822a8c31421dff99d2f0f130eae548}
+
+\item 
+\hypertarget{structproxy__connection_681df404af67c10fc3e62df5b1551064}{
+time\_\-t \textbf{last\_\-write}}
+\label{structproxy__connection_681df404af67c10fc3e62df5b1551064}
+
+\item 
+\hypertarget{structproxy__connection_3842e580831d35a4ad97e9e2657c8fbf}{
+proxy\_\-address $\ast$ \textbf{address}}
+\label{structproxy__connection_3842e580831d35a4ad97e9e2657c8fbf}
+
+\item 
+\hypertarget{structproxy__connection_bc257f656ac924d916d6bb8979c2ecfe}{
+struct proxy\_\-protocol $\ast$ \textbf{protocol}}
+\label{structproxy__connection_bc257f656ac924d916d6bb8979c2ecfe}
+
+\item 
+\hypertarget{structproxy__connection_22bb8881e0a4c911fa76d86895843261}{
+void $\ast$ \textbf{protocol\_\-data}}
+\label{structproxy__connection_22bb8881e0a4c911fa76d86895843261}
+
+\item 
+chunkqueue $\ast$ \hyperlink{structproxy__connection_f950123a510466cda48da6724fd12be5}{send}
+\item 
+\hypertarget{structproxy__connection_52db49892dd5e1cac740d8a9fc893de8}{
+chunkqueue $\ast$ \textbf{recv}}
+\label{structproxy__connection_52db49892dd5e1cac740d8a9fc893de8}
+
+\item 
+\hypertarget{structproxy__connection_8d27b7e3ebf113c0d3f8d2ea7c2ccd44}{
+proxy\_\-connection\_\-state\_\-t \textbf{state}}
+\label{structproxy__connection_8d27b7e3ebf113c0d3f8d2ea7c2ccd44}
+
+\item 
+\hypertarget{structproxy__connection_7f1fc198a2e0fd3e2f3b83de1b02e1e1}{
+time\_\-t \textbf{state\_\-ts}}
+\label{structproxy__connection_7f1fc198a2e0fd3e2f3b83de1b02e1e1}
+
+\item 
+\hypertarget{structproxy__connection_07b7abb6b194634e8eed0840a8d55137}{
+void $\ast$ \textbf{proxy\_\-sess}}
+\label{structproxy__connection_07b7abb6b194634e8eed0840a8d55137}
+
+\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+a connection to a proxy backend
+
+the connection is independent of the incoming request to allow keep-alive 
+
+\subsection{Member Data Documentation}
+\hypertarget{structproxy__connection_f950123a510466cda48da6724fd12be5}{
+\index{proxy\_\-connection@{proxy\_\-connection}!send@{send}}
+\index{send@{send}!proxy_connection@{proxy\_\-connection}}
+\subsubsection[{send}]{\setlength{\rightskip}{0pt plus 5cm}chunkqueue$\ast$ {\bf proxy\_\-connection::send}}}
+\label{structproxy__connection_f950123a510466cda48da6724fd12be5}
+
+
+protocol handler's state data for parsing response from backend. 
+
+The documentation for this struct was generated from the following file:\begin{CompactItemize}
+\item 
+include/lighttpd/mod\_\-proxy\_\-core\_\-pool.h\end{CompactItemize}

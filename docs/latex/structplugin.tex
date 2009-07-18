@@ -1,0 +1,134 @@
+\hypertarget{structplugin}{
+\section{plugin Struct Reference}
+\label{structplugin}\index{plugin@{plugin}}
+}
+{\tt \#include $<$plugin.h$>$}
+
+\subsection*{Public Attributes}
+\begin{CompactItemize}
+\item 
+\hypertarget{structplugin_a4b3d495a0ae1df759643b712d91068f}{
+size\_\-t \textbf{version}}
+\label{structplugin_a4b3d495a0ae1df759643b712d91068f}
+
+\item 
+\hypertarget{structplugin_235162d1645d005e4d8ea2cedc80a236}{
+buffer $\ast$ \textbf{name}}
+\label{structplugin_235162d1645d005e4d8ea2cedc80a236}
+
+\item 
+\hypertarget{structplugin_241bc6c5b4cb17a235b0947fac9d34d5}{
+void $\ast$($\ast$ \textbf{init} )(server $\ast$srv)}
+\label{structplugin_241bc6c5b4cb17a235b0947fac9d34d5}
+
+\item 
+\hypertarget{structplugin_04251883174cadf3e02ae1b1a388bdb7}{
+handler\_\-t($\ast$ \textbf{set\_\-defaults} )(server $\ast$srv, void $\ast$p\_\-d)}
+\label{structplugin_04251883174cadf3e02ae1b1a388bdb7}
+
+\item 
+\hypertarget{structplugin_c092882ffd286543515174a8bd3b70d2}{
+handler\_\-t($\ast$ \textbf{cleanup} )(server $\ast$srv, void $\ast$p\_\-d)}
+\label{structplugin_c092882ffd286543515174a8bd3b70d2}
+
+\item 
+\hypertarget{structplugin_6490af8e037a60d248395a8c68ee83f0}{
+handler\_\-t($\ast$ \textbf{handle\_\-trigger} )(server $\ast$srv, void $\ast$p\_\-d)}
+\label{structplugin_6490af8e037a60d248395a8c68ee83f0}
+
+\item 
+\hypertarget{structplugin_aa3aaf5324316058a36ab97ab7303a62}{
+handler\_\-t($\ast$ \textbf{handle\_\-sighup} )(server $\ast$srv, void $\ast$p\_\-d)}
+\label{structplugin_aa3aaf5324316058a36ab97ab7303a62}
+
+\item 
+\hypertarget{structplugin_e798106278e8cd7e7241b1f1ee9ac914}{
+handler\_\-t($\ast$ \textbf{handle\_\-uri\_\-raw} )(server $\ast$srv, connection $\ast$con, void $\ast$p\_\-d)}
+\label{structplugin_e798106278e8cd7e7241b1f1ee9ac914}
+
+\item 
+\hypertarget{structplugin_fc26fff5d1ec7666608fda729b6a9a74}{
+handler\_\-t($\ast$ \textbf{handle\_\-uri\_\-clean} )(server $\ast$srv, connection $\ast$con, void $\ast$p\_\-d)}
+\label{structplugin_fc26fff5d1ec7666608fda729b6a9a74}
+
+\item 
+\hypertarget{structplugin_c6e9dddb37aca959bd90651e949d5f4d}{
+handler\_\-t($\ast$ \textbf{handle\_\-docroot} )(server $\ast$srv, connection $\ast$con, void $\ast$p\_\-d)}
+\label{structplugin_c6e9dddb37aca959bd90651e949d5f4d}
+
+\item 
+\hypertarget{structplugin_e5818db20f5d464df84a4c8bf4354567}{
+handler\_\-t($\ast$ \textbf{handle\_\-physical} )(server $\ast$srv, connection $\ast$con, void $\ast$p\_\-d)}
+\label{structplugin_e5818db20f5d464df84a4c8bf4354567}
+
+\item 
+\hypertarget{structplugin_79a8993bebdb2ee0cfba7824468a694a}{
+handler\_\-t($\ast$ \textbf{handle\_\-start\_\-backend} )(server $\ast$srv, connection $\ast$con, void $\ast$p\_\-d)}
+\label{structplugin_79a8993bebdb2ee0cfba7824468a694a}
+
+\item 
+\hypertarget{structplugin_348b93d40df354c42d54ac743a6d2732}{
+handler\_\-t($\ast$ \textbf{handle\_\-send\_\-request\_\-content} )(server $\ast$srv, connection $\ast$con, void $\ast$p\_\-d)}
+\label{structplugin_348b93d40df354c42d54ac743a6d2732}
+
+\item 
+\hypertarget{structplugin_2c8efcd277395f7d1dbd484125cf5942}{
+handler\_\-t($\ast$ \textbf{handle\_\-response\_\-header} )(server $\ast$srv, connection $\ast$con, void $\ast$p\_\-d)}
+\label{structplugin_2c8efcd277395f7d1dbd484125cf5942}
+
+\item 
+\hypertarget{structplugin_2589836637d6c1520e21e08e97bc07f9}{
+handler\_\-t($\ast$ \textbf{handle\_\-read\_\-response\_\-content} )(server $\ast$srv, connection $\ast$con, void $\ast$p\_\-d)}
+\label{structplugin_2589836637d6c1520e21e08e97bc07f9}
+
+\item 
+\hypertarget{structplugin_4453042dcbc5c68c290f1451c580a46b}{
+handler\_\-t($\ast$ \textbf{handle\_\-filter\_\-response\_\-content} )(server $\ast$srv, connection $\ast$con, void $\ast$p\_\-d)}
+\label{structplugin_4453042dcbc5c68c290f1451c580a46b}
+
+\item 
+\hypertarget{structplugin_d464d2af155e15bb1ee88e91de6ff891}{
+handler\_\-t($\ast$ \textbf{handle\_\-response\_\-done} )(server $\ast$srv, connection $\ast$con, void $\ast$p\_\-d)}
+\label{structplugin_d464d2af155e15bb1ee88e91de6ff891}
+
+\item 
+\hypertarget{structplugin_5c3bbcff69dfdf5c591c0a420b38c055}{
+handler\_\-t($\ast$ \textbf{connection\_\-reset} )(server $\ast$srv, connection $\ast$con, void $\ast$p\_\-d)}
+\label{structplugin_5c3bbcff69dfdf5c591c0a420b38c055}
+
+\item 
+\hypertarget{structplugin_b59fbc651a4308ac4e89ed27d1d33a00}{
+handler\_\-t($\ast$ \textbf{handle\_\-connection\_\-close} )(server $\ast$srv, connection $\ast$con, void $\ast$p\_\-d)}
+\label{structplugin_b59fbc651a4308ac4e89ed27d1d33a00}
+
+\item 
+\hypertarget{structplugin_7d65846e47eeab07727ed3772d81e62b}{
+handler\_\-t($\ast$ \textbf{handle\_\-joblist} )(server $\ast$srv, connection $\ast$con, void $\ast$p\_\-d)}
+\label{structplugin_7d65846e47eeab07727ed3772d81e62b}
+
+\item 
+\hypertarget{structplugin_a5c0338878875f24bcaf3bb4e3f60bc6}{
+void $\ast$ \textbf{data}}
+\label{structplugin_a5c0338878875f24bcaf3bb4e3f60bc6}
+
+\item 
+\hypertarget{structplugin_b8a4a02c20d1fa7be51580e5c7584998}{
+void $\ast$ \textbf{lib}}
+\label{structplugin_b8a4a02c20d1fa7be51580e5c7584998}
+
+\item 
+\hypertarget{structplugin_bafa5fa5df2ab1a99454e7e56a5dbd61}{
+array $\ast$ \textbf{required\_\-plugins}}
+\label{structplugin_bafa5fa5df2ab1a99454e7e56a5dbd61}
+
+\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+we have 4 states on the connection:\begin{itemize}
+\item read-header\item read-content\item write-header\item write-content \end{itemize}
+
+
+The documentation for this struct was generated from the following file:\begin{CompactItemize}
+\item 
+include/lighttpd/plugin.h\end{CompactItemize}

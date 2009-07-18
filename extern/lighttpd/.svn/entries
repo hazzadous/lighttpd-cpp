@@ -63,6 +63,9 @@ has-props
 
 31
 
+src
+dir
+
 ChangeLog
 file
 
@@ -96,9 +99,6 @@ has-props
 
 
 102764
-
-src
-dir
 
 distribute.sh.in
 file
@@ -344,40 +344,6 @@ has-props
 
 22
 
-autogen.sh
-file
-
-
-
-
-2009-07-18T18:54:34.000000Z
-433167bf49d9c209f9388a96f1cf7e0c
-2008-10-04T23:00:31.944088Z
-2330
-glen
-has-props
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-2772
-
 INSTALL.svn
 file
 
@@ -411,6 +377,40 @@ has-props
 
 
 1440
+
+autogen.sh
+file
+
+
+
+
+2009-07-18T18:54:34.000000Z
+433167bf49d9c209f9388a96f1cf7e0c
+2008-10-04T23:00:31.944088Z
+2330
+glen
+has-props
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+2772
 
 NEWS
 file

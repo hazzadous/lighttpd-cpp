@@ -1,0 +1,646 @@
+ State 0:
+          input ::= * metalines
+          metalines ::= * metalines metaline
+      (2) metalines ::= *
+
+                         input accept
+                     metalines shift  1
+                     {default} reduce 2
+
+State 1:
+      (0) input ::= metalines *
+          metalines ::= metalines * metaline
+          metaline ::= * varline
+          metaline ::= * global
+          metaline ::= * condlines EOL
+          metaline ::= * include
+          metaline ::= * include_shell
+          metaline ::= * EOL
+          varline ::= * key ASSIGN expression
+          varline ::= * key APPEND expression
+          key ::= * LKEY
+          globalstart ::= * GLOBAL
+          global ::= * globalstart LCURLY metalines RCURLY
+          condlines ::= * condlines eols ELSE condline
+          condlines ::= * condline
+          condline ::= * context LCURLY metalines RCURLY
+          context ::= * DOLLAR SRVVARNAME LBRACKET stringop RBRACKET cond expression
+          include ::= * INCLUDE stringop
+          include_shell ::= * INCLUDE_SHELL stringop
+
+                             $ reduce 0
+                           EOL shift  15
+                          LKEY shift  20
+                        GLOBAL shift  40
+                        DOLLAR shift  46
+                       INCLUDE shift  58
+                 INCLUDE_SHELL shift  60
+                      metaline shift  2
+                       varline shift  3
+                        global shift  4
+                     condlines shift  5
+                       include shift  13
+                 include_shell shift  14
+                      condline shift  45
+                           key shift  16
+                   globalstart shift  41
+                       context shift  10
+
+State 2:
+      (1) metalines ::= metalines metaline *
+
+                     {default} reduce 1
+
+State 3:
+      (3) metaline ::= varline *
+
+                     {default} reduce 3
+
+State 4:
+      (4) metaline ::= global *
+
+                     {default} reduce 4
+
+State 5:
+          metaline ::= condlines * EOL
+          eols ::= * EOL
+     (26) eols ::= *
+          condlines ::= condlines * eols ELSE condline
+
+                           EOL shift  6
+                          ELSE reduce 26
+                          eols shift  7
+
+State 6:
+      (5) metaline ::= condlines EOL *
+     (25) eols ::= EOL *
+
+                          ELSE reduce 25
+                     {default} reduce 5
+
+State 7:
+          condlines ::= condlines eols * ELSE condline
+
+                          ELSE shift  8
+
+State 8:
+          condlines ::= condlines eols ELSE * condline
+          condline ::= * context LCURLY metalines RCURLY
+          context ::= * DOLLAR SRVVARNAME LBRACKET stringop RBRACKET cond expression
+
+                        DOLLAR shift  46
+                      condline shift  9
+                       context shift  10
+
+State 9:
+     (29) condlines ::= condlines eols ELSE condline *
+
+                     {default} reduce 29
+
+State 10:
+          condline ::= context * LCURLY metalines RCURLY
+
+                        LCURLY shift  11
+
+State 11:
+          metalines ::= * metalines metaline
+      (2) metalines ::= *
+          condline ::= context LCURLY * metalines RCURLY
+
+                     metalines shift  12
+                     {default} reduce 2
+
+State 12:
+          metalines ::= metalines * metaline
+          metaline ::= * varline
+          metaline ::= * global
+          metaline ::= * condlines EOL
+          metaline ::= * include
+          metaline ::= * include_shell
+          metaline ::= * EOL
+          varline ::= * key ASSIGN expression
+          varline ::= * key APPEND expression
+          key ::= * LKEY
+          globalstart ::= * GLOBAL
+          global ::= * globalstart LCURLY metalines RCURLY
+          condlines ::= * condlines eols ELSE condline
+          condlines ::= * condline
+          condline ::= * context LCURLY metalines RCURLY
+          condline ::= context LCURLY metalines * RCURLY
+          context ::= * DOLLAR SRVVARNAME LBRACKET stringop RBRACKET cond expression
+          include ::= * INCLUDE stringop
+          include_shell ::= * INCLUDE_SHELL stringop
+
+                           EOL shift  15
+                          LKEY shift  20
+                        GLOBAL shift  40
+                        RCURLY shift  62
+                        DOLLAR shift  46
+                       INCLUDE shift  58
+                 INCLUDE_SHELL shift  60
+                      metaline shift  2
+                       varline shift  3
+                        global shift  4
+                     condlines shift  5
+                       include shift  13
+                 include_shell shift  14
+                      condline shift  45
+                           key shift  16
+                   globalstart shift  41
+                       context shift  10
+
+State 13:
+      (6) metaline ::= include *
+
+                     {default} reduce 6
+
+State 14:
+      (7) metaline ::= include_shell *
+
+                     {default} reduce 7
+
+State 15:
+      (8) metaline ::= EOL *
+
+                     {default} reduce 8
+
+State 16:
+          varline ::= key * ASSIGN expression
+          varline ::= key * APPEND expression
+
+                        ASSIGN shift  17
+                        APPEND shift  38
+
+State 17:
+          varline ::= key ASSIGN * expression
+          key ::= * LKEY
+          expression ::= * expression PLUS value
+          expression ::= * value
+          value ::= * key
+          value ::= * STRING
+          value ::= * INTEGER
+          value ::= * array
+          array ::= * LPARAN RPARAN
+          array ::= * LPARAN aelements RPARAN
+
+                          LKEY shift  20
+                        STRING shift  23
+                       INTEGER shift  24
+                        LPARAN shift  26
+                         value shift  28
+                    expression shift  18
+                         array shift  25
+                           key shift  22
+
+State 18:
+      (9) varline ::= key ASSIGN expression *
+          expression ::= expression * PLUS value
+
+                          PLUS shift  19
+                     {default} reduce 9
+
+State 19:
+          key ::= * LKEY
+          expression ::= expression PLUS * value
+          value ::= * key
+          value ::= * STRING
+          value ::= * INTEGER
+          value ::= * array
+          array ::= * LPARAN RPARAN
+          array ::= * LPARAN aelements RPARAN
+
+                          LKEY shift  20
+                        STRING shift  23
+                       INTEGER shift  24
+                        LPARAN shift  26
+                         value shift  21
+                         array shift  25
+                           key shift  22
+
+State 20:
+     (11) key ::= LKEY *
+
+                     {default} reduce 11
+
+State 21:
+     (12) expression ::= expression PLUS value *
+
+                     {default} reduce 12
+
+State 22:
+     (14) value ::= key *
+
+                     {default} reduce 14
+
+State 23:
+     (15) value ::= STRING *
+
+                     {default} reduce 15
+
+State 24:
+     (16) value ::= INTEGER *
+
+                     {default} reduce 16
+
+State 25:
+     (17) value ::= array *
+
+                     {default} reduce 17
+
+State 26:
+          key ::= * LKEY
+          expression ::= * expression PLUS value
+          expression ::= * value
+          value ::= * key
+          value ::= * STRING
+          value ::= * INTEGER
+          value ::= * array
+          array ::= * LPARAN RPARAN
+          array ::= LPARAN * RPARAN
+          array ::= * LPARAN aelements RPARAN
+          array ::= LPARAN * aelements RPARAN
+          aelements ::= * aelements COMMA aelement
+          aelements ::= * aelements COMMA
+          aelements ::= * aelement
+          aelement ::= * expression
+          aelement ::= * stringop ARRAY_ASSIGN expression
+          stringop ::= * expression
+
+                          LKEY shift  20
+                        STRING shift  23
+                       INTEGER shift  24
+                        LPARAN shift  26
+                        RPARAN shift  29
+                         value shift  28
+                    expression shift  27
+                      aelement shift  37
+                     aelements shift  30
+                         array shift  25
+                           key shift  22
+                      stringop shift  34
+
+State 27:
+          expression ::= expression * PLUS value
+     (23) aelement ::= expression *
+     (37) stringop ::= expression *
+
+                          PLUS shift  19
+                  ARRAY_ASSIGN reduce 37
+                     {default} reduce 23
+
+State 28:
+     (13) expression ::= value *
+
+                     {default} reduce 13
+
+State 29:
+     (18) array ::= LPARAN RPARAN *
+
+                     {default} reduce 18
+
+State 30:
+          array ::= LPARAN aelements * RPARAN
+          aelements ::= aelements * COMMA aelement
+          aelements ::= aelements * COMMA
+
+                        RPARAN shift  31
+                         COMMA shift  32
+
+State 31:
+     (19) array ::= LPARAN aelements RPARAN *
+
+                     {default} reduce 19
+
+State 32:
+          key ::= * LKEY
+          expression ::= * expression PLUS value
+          expression ::= * value
+          value ::= * key
+          value ::= * STRING
+          value ::= * INTEGER
+          value ::= * array
+          array ::= * LPARAN RPARAN
+          array ::= * LPARAN aelements RPARAN
+          aelements ::= aelements COMMA * aelement
+     (21) aelements ::= aelements COMMA *
+          aelement ::= * expression
+          aelement ::= * stringop ARRAY_ASSIGN expression
+          stringop ::= * expression
+
+                          LKEY shift  20
+                        STRING shift  23
+                       INTEGER shift  24
+                        LPARAN shift  26
+                         value shift  28
+                    expression shift  27
+                      aelement shift  33
+                         array shift  25
+                           key shift  22
+                      stringop shift  34
+                     {default} reduce 21
+
+State 33:
+     (20) aelements ::= aelements COMMA aelement *
+
+                     {default} reduce 20
+
+State 34:
+          aelement ::= stringop * ARRAY_ASSIGN expression
+
+                  ARRAY_ASSIGN shift  35
+
+State 35:
+          key ::= * LKEY
+          expression ::= * expression PLUS value
+          expression ::= * value
+          value ::= * key
+          value ::= * STRING
+          value ::= * INTEGER
+          value ::= * array
+          array ::= * LPARAN RPARAN
+          array ::= * LPARAN aelements RPARAN
+          aelement ::= stringop ARRAY_ASSIGN * expression
+
+                          LKEY shift  20
+                        STRING shift  23
+                       INTEGER shift  24
+                        LPARAN shift  26
+                         value shift  28
+                    expression shift  36
+                         array shift  25
+                           key shift  22
+
+State 36:
+          expression ::= expression * PLUS value
+     (24) aelement ::= stringop ARRAY_ASSIGN expression *
+
+                          PLUS shift  19
+                     {default} reduce 24
+
+State 37:
+     (22) aelements ::= aelement *
+
+                     {default} reduce 22
+
+State 38:
+          varline ::= key APPEND * expression
+          key ::= * LKEY
+          expression ::= * expression PLUS value
+          expression ::= * value
+          value ::= * key
+          value ::= * STRING
+          value ::= * INTEGER
+          value ::= * array
+          array ::= * LPARAN RPARAN
+          array ::= * LPARAN aelements RPARAN
+
+                          LKEY shift  20
+                        STRING shift  23
+                       INTEGER shift  24
+                        LPARAN shift  26
+                         value shift  28
+                    expression shift  39
+                         array shift  25
+                           key shift  22
+
+State 39:
+     (10) varline ::= key APPEND expression *
+          expression ::= expression * PLUS value
+
+                          PLUS shift  19
+                     {default} reduce 10
+
+State 40:
+     (27) globalstart ::= GLOBAL *
+
+                        LCURLY reduce 27
+
+State 41:
+          global ::= globalstart * LCURLY metalines RCURLY
+
+                        LCURLY shift  42
+
+State 42:
+          metalines ::= * metalines metaline
+      (2) metalines ::= *
+          global ::= globalstart LCURLY * metalines RCURLY
+
+                     metalines shift  43
+                     {default} reduce 2
+
+State 43:
+          metalines ::= metalines * metaline
+          metaline ::= * varline
+          metaline ::= * global
+          metaline ::= * condlines EOL
+          metaline ::= * include
+          metaline ::= * include_shell
+          metaline ::= * EOL
+          varline ::= * key ASSIGN expression
+          varline ::= * key APPEND expression
+          key ::= * LKEY
+          globalstart ::= * GLOBAL
+          global ::= * globalstart LCURLY metalines RCURLY
+          global ::= globalstart LCURLY metalines * RCURLY
+          condlines ::= * condlines eols ELSE condline
+          condlines ::= * condline
+          condline ::= * context LCURLY metalines RCURLY
+          context ::= * DOLLAR SRVVARNAME LBRACKET stringop RBRACKET cond expression
+          include ::= * INCLUDE stringop
+          include_shell ::= * INCLUDE_SHELL stringop
+
+                           EOL shift  15
+                          LKEY shift  20
+                        GLOBAL shift  40
+                        RCURLY shift  44
+                        DOLLAR shift  46
+                       INCLUDE shift  58
+                 INCLUDE_SHELL shift  60
+                      metaline shift  2
+                       varline shift  3
+                        global shift  4
+                     condlines shift  5
+                       include shift  13
+                 include_shell shift  14
+                      condline shift  45
+                           key shift  16
+                   globalstart shift  41
+                       context shift  10
+
+State 44:
+     (28) global ::= globalstart LCURLY metalines RCURLY *
+
+                     {default} reduce 28
+
+State 45:
+     (30) condlines ::= condline *
+
+                     {default} reduce 30
+
+State 46:
+          context ::= DOLLAR * SRVVARNAME LBRACKET stringop RBRACKET cond expression
+
+                    SRVVARNAME shift  47
+
+State 47:
+          context ::= DOLLAR SRVVARNAME * LBRACKET stringop RBRACKET cond expression
+
+                      LBRACKET shift  48
+
+State 48:
+          key ::= * LKEY
+          expression ::= * expression PLUS value
+          expression ::= * value
+          value ::= * key
+          value ::= * STRING
+          value ::= * INTEGER
+          value ::= * array
+          array ::= * LPARAN RPARAN
+          array ::= * LPARAN aelements RPARAN
+          context ::= DOLLAR SRVVARNAME LBRACKET * stringop RBRACKET cond expression
+          stringop ::= * expression
+
+                          LKEY shift  20
+                        STRING shift  23
+                       INTEGER shift  24
+                        LPARAN shift  26
+                         value shift  28
+                    expression shift  49
+                         array shift  25
+                           key shift  22
+                      stringop shift  50
+
+State 49:
+          expression ::= expression * PLUS value
+     (37) stringop ::= expression *
+
+                          PLUS shift  19
+                     {default} reduce 37
+
+State 50:
+          context ::= DOLLAR SRVVARNAME LBRACKET stringop * RBRACKET cond expression
+
+                      RBRACKET shift  51
+
+State 51:
+          context ::= DOLLAR SRVVARNAME LBRACKET stringop RBRACKET * cond expression
+          cond ::= * EQ
+          cond ::= * MATCH
+          cond ::= * NE
+          cond ::= * NOMATCH
+
+                            EQ shift  54
+                         MATCH shift  55
+                            NE shift  56
+                       NOMATCH shift  57
+                          cond shift  52
+
+State 52:
+          key ::= * LKEY
+          expression ::= * expression PLUS value
+          expression ::= * value
+          value ::= * key
+          value ::= * STRING
+          value ::= * INTEGER
+          value ::= * array
+          array ::= * LPARAN RPARAN
+          array ::= * LPARAN aelements RPARAN
+          context ::= DOLLAR SRVVARNAME LBRACKET stringop RBRACKET cond * expression
+
+                          LKEY shift  20
+                        STRING shift  23
+                       INTEGER shift  24
+                        LPARAN shift  26
+                         value shift  28
+                    expression shift  53
+                         array shift  25
+                           key shift  22
+
+State 53:
+          expression ::= expression * PLUS value
+     (32) context ::= DOLLAR SRVVARNAME LBRACKET stringop RBRACKET cond expression *
+
+                          PLUS shift  19
+                        LCURLY reduce 32
+
+State 54:
+     (33) cond ::= EQ *
+
+                     {default} reduce 33
+
+State 55:
+     (34) cond ::= MATCH *
+
+                     {default} reduce 34
+
+State 56:
+     (35) cond ::= NE *
+
+                     {default} reduce 35
+
+State 57:
+     (36) cond ::= NOMATCH *
+
+                     {default} reduce 36
+
+State 58:
+          key ::= * LKEY
+          expression ::= * expression PLUS value
+          expression ::= * value
+          value ::= * key
+          value ::= * STRING
+          value ::= * INTEGER
+          value ::= * array
+          array ::= * LPARAN RPARAN
+          array ::= * LPARAN aelements RPARAN
+          stringop ::= * expression
+          include ::= INCLUDE * stringop
+
+                          LKEY shift  20
+                        STRING shift  23
+                       INTEGER shift  24
+                        LPARAN shift  26
+                         value shift  28
+                    expression shift  49
+                         array shift  25
+                           key shift  22
+                      stringop shift  59
+
+State 59:
+     (38) include ::= INCLUDE stringop *
+
+                     {default} reduce 38
+
+State 60:
+          key ::= * LKEY
+          expression ::= * expression PLUS value
+          expression ::= * value
+          value ::= * key
+          value ::= * STRING
+          value ::= * INTEGER
+          value ::= * array
+          array ::= * LPARAN RPARAN
+          array ::= * LPARAN aelements RPARAN
+          stringop ::= * expression
+          include_shell ::= INCLUDE_SHELL * stringop
+
+                          LKEY shift  20
+                        STRING shift  23
+                       INTEGER shift  24
+                        LPARAN shift  26
+                         value shift  28
+                    expression shift  49
+                         array shift  25
+                           key shift  22
+                      stringop shift  61
+
+State 61:
+     (39) include_shell ::= INCLUDE_SHELL stringop *
+
+                     {default} reduce 39
+
+State 62:
+     (31) condline ::= context LCURLY metalines RCURLY *
+
+                     {default} reduce 31
+

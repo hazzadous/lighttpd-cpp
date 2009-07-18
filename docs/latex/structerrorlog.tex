@@ -1,0 +1,63 @@
+\hypertarget{structerrorlog}{
+\section{errorlog Struct Reference}
+\label{structerrorlog}\index{errorlog@{errorlog}}
+}
+\subsection*{Public Types}
+\begin{CompactItemize}
+\item 
+enum \{ \textbf{ERRORLOG\_\-FILE}, 
+\textbf{ERRORLOG\_\-FD}, 
+\textbf{ERRORLOG\_\-SYSLOG}
+ \}
+\subsection*{Public Attributes}
+\begin{CompactItemize}
+\item 
+\hypertarget{structerrorlog_91c64c945bcc42d0c568986ebc56aec6}{
+buffer $\ast$ \textbf{file}}
+\label{structerrorlog_91c64c945bcc42d0c568986ebc56aec6}
+
+\item 
+\hypertarget{structerrorlog_819e991bf71f814ce719f2bbc54f0c3c}{
+unsigned short \textbf{use\_\-syslog}}
+\label{structerrorlog_819e991bf71f814ce719f2bbc54f0c3c}
+
+\item 
+\hypertarget{structerrorlog_7c742fe7ce6efd7d689e4be156ba5a03}{
+int \textbf{fd}}
+\label{structerrorlog_7c742fe7ce6efd7d689e4be156ba5a03}
+
+\item 
+\hypertarget{structerrorlog_d8f03d4f8a50455a5e008da0e3e491db}{
+enum errorlog:: \{ ... \}  \textbf{mode}}
+\label{structerrorlog_d8f03d4f8a50455a5e008da0e3e491db}
+
+\item 
+\hypertarget{structerrorlog_6c5005571427e17c515dd26844db1ea1}{
+buffer $\ast$ \textbf{buf}}
+\label{structerrorlog_6c5005571427e17c515dd26844db1ea1}
+
+\item 
+\hypertarget{structerrorlog_79fa384854edf62041ab26fd07cde87b}{
+time\_\-t \textbf{cached\_\-ts}}
+\label{structerrorlog_79fa384854edf62041ab26fd07cde87b}
+
+\item 
+\hypertarget{structerrorlog_567be0d81abbaf275cb070b980855f47}{
+buffer $\ast$ \textbf{cached\_\-ts\_\-str}}
+\label{structerrorlog_567be0d81abbaf275cb070b980855f47}
+
+\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+open the \hyperlink{structerrorlog}{errorlog}
+
+we have 3 possibilities:\begin{itemize}
+\item stderr (default)\item syslog\item logfile\end{itemize}
+
+
+if the open failed, report to the user and die 
+
+The documentation for this struct was generated from the following file:\begin{CompactItemize}
+\item 
+include/lighttpd/log.c\end{CompactItemize}

@@ -1,0 +1,163 @@
+ State 0:
+          response_hdr ::= * header headers CRLF
+          response_hdr ::= * protocol number reason CRLF headers CRLF
+          response_hdr ::= * protocol number CRLF headers CRLF
+          protocol ::= * STRING
+          header ::= * STRING COLON STRING CRLF
+          header ::= * STRING COLON CRLF
+
+                        STRING shift  22
+                      protocol shift  10
+                  response_hdr accept
+                        header shift  1
+
+State 1:
+          response_hdr ::= header * headers CRLF
+          headers ::= * headers header
+      (8) headers ::= *
+
+                       headers shift  2
+                     {default} reduce 8
+
+State 2:
+          response_hdr ::= header headers * CRLF
+          headers ::= headers * header
+          header ::= * STRING COLON STRING CRLF
+          header ::= * STRING COLON CRLF
+
+                          CRLF shift  3
+                        STRING shift  5
+                        header shift  4
+
+State 3:
+      (0) response_hdr ::= header headers CRLF *
+
+                             $ reduce 0
+
+State 4:
+      (7) headers ::= headers header *
+
+                     {default} reduce 7
+
+State 5:
+          header ::= STRING * COLON STRING CRLF
+          header ::= STRING * COLON CRLF
+
+                         COLON shift  6
+
+State 6:
+          header ::= STRING COLON * STRING CRLF
+          header ::= STRING COLON * CRLF
+
+                          CRLF shift  9
+                        STRING shift  7
+
+State 7:
+          header ::= STRING COLON STRING * CRLF
+
+                          CRLF shift  8
+
+State 8:
+      (9) header ::= STRING COLON STRING CRLF *
+
+                     {default} reduce 9
+
+State 9:
+     (10) header ::= STRING COLON CRLF *
+
+                     {default} reduce 10
+
+State 10:
+          response_hdr ::= protocol * number reason CRLF headers CRLF
+          response_hdr ::= protocol * number CRLF headers CRLF
+          number ::= * STRING
+
+                        STRING shift  21
+                        number shift  11
+
+State 11:
+          response_hdr ::= protocol number * reason CRLF headers CRLF
+          response_hdr ::= protocol number * CRLF headers CRLF
+          reason ::= * STRING
+          reason ::= * reason STRING
+
+                          CRLF shift  17
+                        STRING shift  20
+                        reason shift  12
+
+State 12:
+          response_hdr ::= protocol number reason * CRLF headers CRLF
+          reason ::= reason * STRING
+
+                          CRLF shift  13
+                        STRING shift  16
+
+State 13:
+          response_hdr ::= protocol number reason CRLF * headers CRLF
+          headers ::= * headers header
+      (8) headers ::= *
+
+                       headers shift  14
+                     {default} reduce 8
+
+State 14:
+          response_hdr ::= protocol number reason CRLF headers * CRLF
+          headers ::= headers * header
+          header ::= * STRING COLON STRING CRLF
+          header ::= * STRING COLON CRLF
+
+                          CRLF shift  15
+                        STRING shift  5
+                        header shift  4
+
+State 15:
+      (1) response_hdr ::= protocol number reason CRLF headers CRLF *
+
+                             $ reduce 1
+
+State 16:
+      (6) reason ::= reason STRING *
+
+                     {default} reduce 6
+
+State 17:
+          response_hdr ::= protocol number CRLF * headers CRLF
+          headers ::= * headers header
+      (8) headers ::= *
+
+                       headers shift  18
+                     {default} reduce 8
+
+State 18:
+          response_hdr ::= protocol number CRLF headers * CRLF
+          headers ::= headers * header
+          header ::= * STRING COLON STRING CRLF
+          header ::= * STRING COLON CRLF
+
+                          CRLF shift  19
+                        STRING shift  5
+                        header shift  4
+
+State 19:
+      (2) response_hdr ::= protocol number CRLF headers CRLF *
+
+                             $ reduce 2
+
+State 20:
+      (5) reason ::= STRING *
+
+                     {default} reduce 5
+
+State 21:
+      (4) number ::= STRING *
+
+                     {default} reduce 4
+
+State 22:
+      (3) protocol ::= STRING *
+          header ::= STRING * COLON STRING CRLF
+          header ::= STRING * COLON CRLF
+
+                        STRING reduce 3
+                         COLON shift  6
+
