@@ -13,7 +13,7 @@
 class mod_blank : public Plugin< mod_blank >
 {
 public:
-	mod_blank( server& srv );
+	mod_blank( plugin& p );
 	typedef boost::mpl::list< 	UriRawHandler,
 								UriCleanHandler,
 								DocRootHandler,

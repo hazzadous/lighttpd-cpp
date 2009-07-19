@@ -6,7 +6,7 @@
 #endif
 
 mod_blank::mod_blank( server& srv )
- :	Plugin< mod_blank >( "blank", 1, srv ),
+ :	Plugin< mod_blank >( "blank", 1, p ),
 	some_string		( "some_string" ),
 	some_int		( "some_int" ),
 	some_bool		( "some_bool" ),

@@ -139,7 +139,6 @@ public:
 		// Stop propagation to C code.
 		try
 		{
-			// Here the actual plugin instance is created.
 			return reinterpret_cast< void* >( new MostDerived( *srv ) );
 		}
 		catch( ... )
