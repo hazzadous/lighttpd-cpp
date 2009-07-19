@@ -6,6 +6,12 @@ Desc: 		SConstruct build framework for building a lighttpd library
 """
 
 ##
+# General environment config.
+##
+#Append( LIBPATH=[ 'lib/' ] )
+env = Environment( )
+
+##
 # Building the lighttpd.a
 # I'm sure there are more neat ways of doing these things,
 # but lets just run lemon every time for now.
@@ -64,8 +70,14 @@ defines = \
 ]
 
 # Make our lighttpd library
-lighttpd_list = StaticLibrary( 'lib/lighttpd.a', library_sources, CCFLAGS=string.join( [ '' ] + defines, " -D" ) )
+lighttpd_list = StaticLibrary( 'lib/lighttpd', library_sources, CCFLAGS=string.join( [ '' ] + defines, " -D" ) )
 
 # Compile our empty module.
-SharedLibrary( 'src/mod_blank.so', 'src/mod_blank.cpp', LIBPATH=[ 'lib/' ], LIBS=lighttpd_list, CCFLAGS="-I./include/" )
+SharedLibrary \
+( 
+	'src/mod_blank', 
+	'src/mod_blank.cpp',  
+	SHLIBPREFIX='', LIBPATH=[ 'lib/' ], 
+	LIBS=lighttpd_list, CCFLAGS="-I./include/" 
+)
 
