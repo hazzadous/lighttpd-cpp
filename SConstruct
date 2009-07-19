@@ -12,7 +12,7 @@ Desc: 		SConstruct build framework for building a lighttpd library
 env = Environment( )
 
 ##
-# Building the lighttpd.a
+# Building the lighttpd static library
 # I'm sure there are more neat ways of doing these things,
 # but lets just run lemon every time for now.
 ##
@@ -64,15 +64,22 @@ defines = \
 [
 	'HAVE_SOCKLEN_T', 
 	'HAVE_STDINT_H', 
-	'LIGHTTPD_VERSION_ID=1.5', 
+	'LIGHTTPD_VERSION_ID=10500', 
 	'PACKAGE_NAME=\\"lighttpd\\"', 
 	'PACKAGE_VERSION=\\"1.5.0\\"'
 ]
 
 # Make our lighttpd library
-lighttpd_list = StaticLibrary( 'lib/lighttpd', library_sources, CCFLAGS=string.join( [ '' ] + defines, " -D" ) )
+lighttpd_list = StaticLibrary \
+( 
+	'lib/lighttpd', 
+	library_sources, 
+	CCFLAGS=string.join( [ '' ] + defines, " -D" ) 
+)
 
+##
 # Compile our empty module.
+##
 SharedLibrary \
 ( 
 	'src/mod_blank', 
