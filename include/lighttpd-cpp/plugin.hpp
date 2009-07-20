@@ -167,7 +167,7 @@ MAKE_HANDLER( StartBackendHandler, handle_start_backend );
 #define MAKE_PLUGIN( name ) \
 	extern "C" \
 	{ \
-		static int name##_plugin_init( plugin* p ) \
+		LI_EXPORT int name##_plugin_init( plugin* p ) \
 		{ \
 			return Plugin< name >::plugin_init( *p ); \
 		} \

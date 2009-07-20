@@ -70,7 +70,7 @@ defines = \
 ]
 
 # Make our lighttpd library
-lighttpd_list = StaticLibrary \
+lighttpd_list = SharedLibrary \
 ( 
 	'lib/lighttpd', 
 	library_sources, 
@@ -84,7 +84,6 @@ SharedLibrary \
 ( 
 	'src/mod_blank', 
 	'src/mod_blank.cpp',  
-	SHLIBPREFIX='', LIBPATH=[ 'lib/' ], 
-	LIBS=lighttpd_list, CCFLAGS="-I./include/" 
+	SHLIBPREFIX='', CCFLAGS="-I./include/" 
 )
 

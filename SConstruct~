@@ -70,14 +70,16 @@ defines = \
 ]
 
 # Make our lighttpd library
-lighttpd_list = StaticLibrary \
+lighttpd_list = SharedLibrary \
 ( 
 	'lib/lighttpd', 
 	library_sources, 
 	CCFLAGS=string.join( [ '' ] + defines, " -D" ) 
 )
 
+##
 # Compile our empty module.
+##
 SharedLibrary \
 ( 
 	'src/mod_blank', 
