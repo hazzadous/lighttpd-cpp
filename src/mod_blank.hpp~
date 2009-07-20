@@ -10,10 +10,10 @@
 #include <boost/mpl/list.hpp>
 #include <string>
 
-class mod_blank : public Plugin< mod_blank >
+class mod_blank : public Plugin< mod_blank, 10500 >
 {
 public:
-	mod_blank( plugin& p );
+	mod_blank( server& srv );
 	typedef boost::mpl::list< 	UriRawHandler,
 								UriCleanHandler,
 								DocRootHandler,

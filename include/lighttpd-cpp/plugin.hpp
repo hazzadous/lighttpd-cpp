@@ -51,19 +51,19 @@
 class plugin_base
 {
 protected:
-	// We always have a reference to the C plugin structure
-	// lighty handles the freeing of p
-	plugin_base( const char* name, const std::size_t version, server& srv )
+	// Sets up plugin generic settings
+	plugin_base( const std::string& name, const std::size_t& version, server& srv )
 	 : name( name ), version( version ), srv( srv )
 	{}
 
 	const server& srv;
 
 public:
+	virtual ~plugin_base( ){ }
 
-	// Here we have functions and data that are required by (almost) all plugins
-	const std::string name;
-	const std::size_t version;
+	// Here we have functions and data that are required by all plugins
+	const std::string& name;
+	const std::size_t& version;
 
 	// For set defaults, we just call set defaults on all config_options
 	// in the current translation unit.
@@ -92,11 +92,19 @@ class Plugin : public plugin_base
 protected:
 	// Private constructor for setting plugin name.
 	// Could say this is a part of the traditional lighty init function
-	Plugin( const char* name, const std::size_t version, server& srv )
+	Plugin( server& srv )
 	 : plugin_base( name, version, srv )
 	{}
 
 public:
+	// Make sure the base destructor gets called.
+	virtual ~Plugin( ){ delete static_cast< MostDerived* >( this ); }
+
+	// The name and version of the plugin implemented by MostDerived.
+	// Needs to be static so that we have it in time for plugin_init.
+	static std::string name;
+	static std::size_t version;
+
 	// This is to be called after entry, i.e. from _plugin_init.
 	// We can't really eliminate the need to implement _plugin_init in
 	// derived modules as we have to have the correct function name.
@@ -106,10 +114,14 @@ public:
 		// Make sure exceptions do not propergate to C code
 		try
 		{
+			p.name = buffer_init_string( name.c_str( ) );
+			p.version = version;
+
 			// Here we are just setting members of plugin p,
-			// we create an instance of MostDerived later then this init function
-			// is called.
+			// we create an instance of MostDerived later when this init function
+			// is called, and destroying on p.cleanup
 			p.init = &init;
+			p.cleanup = &cleanup;
 
 			// This set_defaults function will set defaults of all config_options
 			// that have been specified in this translation unit.
@@ -147,6 +159,21 @@ public:
 			return NULL;
 		}
 	}
+
+	// Calls plugin base destructor that works its way down to MostDerived.
+	static handler_t cleanup( server* srv, void* p_d )
+	{
+		try
+		{
+			delete reinterpret_cast< plugin_base* >( p_d );
+			return HANDLER_GO_ON;
+		}
+		catch( ... )
+		{
+		}
+
+		return HANDLER_ERROR;
+	}
 };
 
 // A list of defined interfaces.
@@ -164,14 +191,16 @@ MAKE_HANDLER( StartBackendHandler, handle_start_backend );
 
 // Given your plugin name, this will create the entry point for lighttpd to use.
 // To be used in your plugins cpp file.
-#define MAKE_PLUGIN( name ) \
+#define MAKE_PLUGIN( class_name, plugin_name, plugin_version ) \
 	extern "C" \
 	{ \
-		LI_EXPORT int name##_plugin_init( plugin* p ) \
+		LI_EXPORT int class_name##_plugin_init( plugin* p ) \
 		{ \
-			return Plugin< name >::plugin_init( *p ); \
+			return class_name::plugin_init( *p ); \
 		} \
-	}
+	} \
+	template <>	std::string Plugin< class_name >::name( plugin_name ); \
+	template <> std::size_t Plugin< class_name >::version( plugin_version );
 
 #endif // _LIGHTTPD_PLUGIN_HPP_
 

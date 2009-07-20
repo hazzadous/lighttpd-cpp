@@ -538,8 +538,8 @@ handler_t plugins_call_init(server *srv) {
 			((plugin_data *)(p->data))->id = i + 1;
 
 			if (p->version != LIGHTTPD_VERSION_ID) {
-				log_error_write(srv, __FILE__, __LINE__, "sb",
-						"plugin-version doesn't match lighttpd-version for", p->name);
+				log_error_write(srv, __FILE__, __LINE__, "sbi",
+						"plugin-version doesn't match lighttpd-version for", p->name, p->version);
 				return HANDLER_ERROR;
 			}
 		} else {

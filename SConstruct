@@ -64,7 +64,8 @@ defines = \
 [
 	'HAVE_SOCKLEN_T', 
 	'HAVE_STDINT_H', 
-	'LIGHTTPD_VERSION_ID=10500', 
+	# For some reason the lighty version is 0x10500 converted to decimal.
+	'LIGHTTPD_VERSION_ID=0x10500',
 	'PACKAGE_NAME=\\"lighttpd\\"', 
 	'PACKAGE_VERSION=\\"1.5.0\\"'
 ]
@@ -84,6 +85,6 @@ SharedLibrary \
 ( 
 	'src/mod_blank', 
 	'src/mod_blank.cpp',  
-	SHLIBPREFIX='', CCFLAGS="-I./include/" 
+	SHLIBPREFIX='', CCFLAGS="-I./include/ -D'LIGHTTPD_VERSION_ID=0x10500'"
 )
 

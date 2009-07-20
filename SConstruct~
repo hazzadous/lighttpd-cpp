@@ -84,7 +84,6 @@ SharedLibrary \
 ( 
 	'src/mod_blank', 
 	'src/mod_blank.cpp',  
-	SHLIBPREFIX='', LIBPATH=[ 'lib/' ], 
-	LIBS=lighttpd_list, CCFLAGS="-I./include/" 
+	SHLIBPREFIX='', CCFLAGS="-I./include/ -D'LIGHTTPD_VERSION_ID=10500'"
 )
 
