@@ -45,18 +45,16 @@ exclude_filenames = \
 [ 	
 	'lemon.c', 
 	'lempar.c', 
-	'network.c', 
 	'splaytree.c', 
-	'stream.c', 
 	'xgetopt.c',
-	'sys-socket.c', 
 	'fcgi-stat-accel.c',
 	'server.c' 
 ]
 
 exclude_files = [ File( '%s/%s' % ( lighttpd_include, filename ) ) for filename in exclude_filenames ] + \
 				Glob( '%s/*_test.c' % lighttpd_include ) + \
-				Glob( '%s/mod_*.c' % lighttpd_include )
+				Glob( '%s/mod_*.c' % lighttpd_include ) + \
+				File( 'include/lighttpd-cpp/server-tests.c' )
 
 library_sources = list( set( source_files ) - set( exclude_files ) )
 
@@ -64,9 +62,14 @@ defines = \
 [
 	'HAVE_SOCKLEN_T', 
 	'HAVE_STDINT_H', 
-	'LIGHTTPD_VERSION_ID=10500', 
+	'HAVE_SYS_UN_H',
+	'HAVE_INET_ATON',
+	'HAVE_MMAP',
+	# For some reason the lighty version is 0x10500 converted to decimal.
+	'LIGHTTPD_VERSION_ID=0x10500',
 	'PACKAGE_NAME=\\"lighttpd\\"', 
-	'PACKAGE_VERSION=\\"1.5.0\\"'
+	'PACKAGE_VERSION=\\"1.5.0\\"',
+	'LIBRARY_DIR=./lib/'
 ]
 
 # Make our lighttpd library
@@ -80,10 +83,21 @@ lighttpd_list = SharedLibrary \
 ##
 # Compile our empty module.
 ##
-SharedLibrary \
+mod_blank_list = SharedLibrary \
 ( 
 	'src/mod_blank', 
 	'src/mod_blank.cpp',  
-	SHLIBPREFIX='', CCFLAGS="-I./include/ -D'LIGHTTPD_VERSION_ID=10500'"
+	SHLIBPREFIX='', CCFLAGS="-I./include/ -D'LIGHTTPD_VERSION_ID=0x10500'"
+)
+
+##
+# Compile our empty module tests.
+##
+Program \
+(
+	'src/tests/handler_setter_tests',
+	'src/tests/handler_setter_tests.cpp',
+	CCFLAGS="-I./include/", LIBPATH=[ "./lib/", "./src/" ], 
+	LIBS=[ lighttpd_list, mod_blank_list, "dl" ]
 )
 
