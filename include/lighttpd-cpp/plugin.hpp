@@ -69,7 +69,7 @@ public:
 	// in the current translation unit.
 	handler_t set_defaults( )
 	{
-		return config_option_base::set_all_defaults( );
+		return config_option_base::set_all_defaults( srv );
 	}
 
 	static handler_t set_defaults_wrapper( server* s, void* p_d )

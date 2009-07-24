@@ -45,14 +45,14 @@ struct config_option_base
 		registry.erase( std::find( registry.begin(), registry.end(), this ) );
 	}
 
-	virtual handler_t set_defaults( const server& srv ) = 0;
-	virtual handler_t set_defaults( ) = 0;
+	virtual handler_t set_defaults( const server& s ) = 0;
+	//virtual handler_t set_defaults( ) = 0;
 
-	static handler_t set_all_defaults( )
+	static handler_t set_all_defaults( const server& srv )
 	{
 		for( registry_iterator i = registry.begin( ); i != registry.end( ); ++i )
 		{
-			if( (*i)->set_defaults( ) != HANDLER_ERROR ) continue;
+			if( (*i)->set_defaults( srv ) != HANDLER_ERROR ) continue;
 			return HANDLER_ERROR;
 		}
 		return HANDLER_GO_ON;
@@ -318,10 +318,12 @@ struct config_option : public config_option_base
 	 : config_option_base( key )
 	{ }
 
+	/*
 	virtual handler_t set_defaults( )
 	{
 		return set_defaults( *srv );
 	}
+	*/
 
 	virtual handler_t set_defaults( const server& s )
 	{
