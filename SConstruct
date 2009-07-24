@@ -93,6 +93,7 @@ mod_blank_list = SharedLibrary \
 ##
 # Compile our empty module tests.
 ##
+"""
 Program \
 (
 	'src/tests/handler_setter_tests',
@@ -100,4 +101,5 @@ Program \
 	CCFLAGS="-I./include/", LIBPATH=[ "./lib/", "./src/" ], 
 	LIBS=[ lighttpd_list, mod_blank_list, "dl" ]
 )
+"""
 
