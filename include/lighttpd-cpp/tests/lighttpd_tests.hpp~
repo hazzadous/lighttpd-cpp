@@ -88,7 +88,9 @@ TEST_F( lighttpd_tests, ConfigParsed )
 {
 	data_unset *dc = srv->config_context->data[0];
 
-	dc->print( dc, 0 );
+	// Check global config is there, and (random test) that the port is 8080.
+	ASSERT_TRUE( dc );
+	// EXPECT_EQ( 8080, 
 }
 
 

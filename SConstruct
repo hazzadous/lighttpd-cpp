@@ -94,6 +94,14 @@ mod_blank_list = SharedLibrary \
 ##
 Program \
 (
+	'src/tests/datatype_helper_tests',
+	'src/tests/datatype_helper_tests.cpp',
+	CCFLAGS="-I./include/ " + string.join( [ '' ] + defines, " -D" ), LIBPATH=[ "./lib/" ], 
+	LIBS=[ "gtest_main", lighttpd_list, mod_blank_list, "dl"  ]
+)
+
+Program \
+(
 	'src/tests/handler_setter_tests',
 	'src/tests/handler_setter_tests.cpp',
 	CCFLAGS="-I./include/ " + string.join( [ '' ] + defines, " -D" ), LIBPATH=[ "./lib/" ], 

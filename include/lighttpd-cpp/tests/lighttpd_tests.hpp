@@ -5,6 +5,8 @@
 #ifndef _LIGHTTPD_TESTS_HPP_
 #define _LIGHTTPD_TESTS_HPP_
 
+#define TESTING
+
 #include <gtest/gtest.h>
 #include <string>
 

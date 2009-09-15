@@ -18,6 +18,8 @@ public:
 		some_short		( "some_short" )
 	{}
 
+	virtual ~mod_blank( ){ }
+
 	typedef boost::mpl::list< 	UriRawHandler,
 								UriCleanHandler,
 								DocRootHandler,

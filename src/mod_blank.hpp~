@@ -11,12 +11,14 @@ class mod_blank : public Plugin< mod_blank >
 {
 public:
 	mod_blank( server& srv )
-	 :	Plugin< mod_blank >( srv ),
-		some_string		( "some_string" ),
+	 :	Plugin< mod_blank >( srv )
+/*		some_string		( "some_string" ),
 		some_int		( "some_int" ),
 		some_bool		( "some_bool" ),
-		some_short		( "some_short" )
+		some_short		( "some_short" ) */
 	{}
+
+	virtual ~mod_blank( ){ }
 
 	typedef boost::mpl::list< 	UriRawHandler,
 								UriCleanHandler,
@@ -30,8 +32,9 @@ public:
 	handler_t handle_physical( connection& con ){ return HANDLER_GO_ON; }
 	handler_t handle_start_backend( connection& con ){ return HANDLER_GO_ON; }
 
-	config_option< std::string > 	some_string;
+/*	config_option< std::string > 	some_string;
 	config_option< int > 			some_int;
 	config_option< bool > 			some_bool;
-	config_option< short > 			some_short;
+	config_option< short > 			some_short;*/
 };
+

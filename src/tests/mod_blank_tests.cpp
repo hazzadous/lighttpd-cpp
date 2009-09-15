@@ -9,6 +9,7 @@
 #include <lighttpd-cpp/tests/plugin_tests.hpp>
 #include "../mod_blank.hpp"
 
+// Produce the mod_blank_plugin_init function which we wish to test.
 MAKE_PLUGIN( mod_blank, "blank", LIGHTTPD_VERSION_ID );
 
 class mod_blank_tests : public plugin_tests< mod_blank >
@@ -16,14 +17,14 @@ class mod_blank_tests : public plugin_tests< mod_blank >
 	public:
 		mod_blank_tests( ) : plugin_tests< mod_blank >( "src/tests/mod_blank_stub.conf" )
 		{
-			p.init
-			= p.cleanup
-			= p.set_defaults
-			= NULL;
+			p.init = NULL;
 
-			p.handle_trigger
-			= p.handle_sighup
-			= p.handle_uri_raw
+			p.cleanup
+			= p.set_defaults
+			= p.handle_trigger
+			= p.handle_sighup = NULL;
+
+			p.handle_uri_raw
 			= p.handle_uri_clean
 			= p.handle_docroot
 			= p.handle_physical
@@ -35,8 +36,7 @@ class mod_blank_tests : public plugin_tests< mod_blank >
 			= p.handle_response_done
 			= p.connection_reset
 			= p.handle_connection_close
-			= p.handle_joblist
-			= NULL;
+			= p.handle_joblist = NULL;
 		}
 
 		virtual ~mod_blank_tests( ){ };
@@ -54,8 +54,9 @@ TEST_F( mod_blank_tests, PluginConstruction )
 	EXPECT_EQ( LIGHTTPD_VERSION_ID, p.version );
 }
 
-TEST_F( mod_blank_tests, PluginInit )
+TEST_F( mod_blank_tests, PluginInitCleanup )
 {
+	// Init
 	ASSERT_FALSE( mod_blank_plugin_init( &p ) );
 
 	EXPECT_TRUE( p.name );
@@ -80,5 +81,20 @@ TEST_F( mod_blank_tests, PluginInit )
 	EXPECT_FALSE( p.connection_reset );
 	EXPECT_FALSE( p.handle_connection_close );
 	EXPECT_FALSE( p.handle_joblist );
+
+	mod_blank* mb = reinterpret_cast< mod_blank* >( p.init( srv ) );
+
+	EXPECT_EQ( std::string( "blank" ), mb->name );
+	EXPECT_EQ( LIGHTTPD_VERSION_ID, mb->version );
+
+	// Cleanup
+	EXPECT_EQ( p.cleanup( srv, mb ), HANDLER_GO_ON );
 }
+
+TEST_F( mod_blank_tests, SetDefaults )
+{
+	mod_blank mb( *srv );
+	EXPECT_EQ( mb.set_defaults( ), HANDLER_GO_ON );
+}
+
 

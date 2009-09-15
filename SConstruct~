@@ -96,7 +96,7 @@ Program \
 (
 	'src/tests/handler_setter_tests',
 	'src/tests/handler_setter_tests.cpp',
-	CCFLAGS="-I./include/ ", 
+	CCFLAGS="-I./include/ " + string.join( [ '' ] + defines, " -D" ), LIBPATH=[ "./lib/" ], 
 	LIBS=[ "gtest_main", lighttpd_list, mod_blank_list, "dl"  ]
 )
 
@@ -104,7 +104,7 @@ Program \
 (
 	'src/tests/mod_blank_tests',
 	'src/tests/mod_blank_tests.cpp',
-	CCFLAGS="-g -I./include/ ", 
+	CCFLAGS="-g -I./include/ " + string.join( [ '' ] + defines, " -D" ), LIBPATH=[ "./lib/" ], 
 	LIBS=[ "gtest_main", lighttpd_list, mod_blank_list, "dl"  ]
 )
 

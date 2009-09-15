@@ -119,8 +119,10 @@ public:
 	static int plugin_init( plugin& p )
 	{
 		// Make sure exceptions do not propergate to C code
+#ifndef TESTING
 		try
 		{
+#endif
 			p.name = buffer_init_string( name.c_str( ) );
 			p.version = version;
 
@@ -143,11 +145,13 @@ public:
 			setter::set( p );
 
 			return 0;
+#ifndef TESTING
 		}
 		catch( ... )
 		{
 			return 1;
 		}
+#endif
 	}
 
 	// To be called from lighttpd in its _init phase of plugin initialization.
@@ -156,15 +160,19 @@ public:
 	static void* init( server* srv )
 	{
 		// Stop propagation to C code.
+#ifndef TESTING
 		try
 		{
+#endif
 			// Here the actual plugin instance is created.
 			return reinterpret_cast< void* >( new MostDerived( *srv ) );
+#ifndef TESTING
 		}
 		catch( ... )
 		{
 			return NULL;
 		}
+#endif
 	}
 
 	// Calls plugin base destructor that works its way down to MostDerived.
