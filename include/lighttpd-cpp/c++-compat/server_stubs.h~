@@ -5,7 +5,7 @@
 #ifndef _SERVER_STUBS_H_
 #define _SERVER_STUBS_H_
 
-#include <lighttpd/base.h>
+#include <lighttpd/server.h>
 
 // Server memory management that we need to create our server test stubs.
 server *server_init(void);

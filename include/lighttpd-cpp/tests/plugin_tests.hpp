@@ -14,16 +14,6 @@ class plugin_tests : public plugin_base_tests
 	public:
 		plugin_tests( const std::string config ) : plugin_base_tests( config ){ }
 		virtual ~plugin_tests( ){ }
-
-		virtual void SetUp( )
-		{
-		
-		}
-
-		virtual void TearDown( )
-		{
-
-		}
 };
 
 #endif // _PLUGIN_TESTS_HPP_

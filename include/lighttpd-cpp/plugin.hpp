@@ -13,6 +13,10 @@
 #include "handler_helpers.hpp"
 #include "datatype_helpers.hpp"
 
+// Tests to which we are friends.
+class lighttpd_tests;
+class plugin_base_tests;
+
 /**
  * Abstract base class for C++ lighty plugins.  Not sure if its worth it 
  * yet, lets see how useful it is.  Really there shouldn't be any
@@ -53,13 +57,16 @@ class plugin_base
 protected:
 	// Sets up plugin generic settings
 	plugin_base( const std::string& name, const std::size_t& version, server& srv )
-	 : name( name ), version( version ), srv( srv )
+	 : srv( srv ), name( name ), version( version )
 	{}
 
 	const server& srv;
 
 public:
 	virtual ~plugin_base( ){ }
+
+	// Allow access to the constructor from the following tests.
+	friend class plugin_base_tests_PluginBaseInit_Test;
 
 	// Here we have functions and data that are required by all plugins
 	const std::string& name;
@@ -98,7 +105,7 @@ protected:
 
 public:
 	// Make sure the base destructor gets called.
-	virtual ~Plugin( ){ delete static_cast< MostDerived* >( this ); }
+	virtual ~Plugin( ){ }
 
 	// The name and version of the plugin implemented by MostDerived.
 	// Needs to be static so that we have it in time for plugin_init.
