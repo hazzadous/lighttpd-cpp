@@ -76,7 +76,7 @@ lighttpd_list = SharedLibrary \
 ( 
 	'lib/lighttpd', 
 	library_sources, 
-	CCFLAGS=string.join( [ '' ] + defines, " -D" ) 
+	CCFLAGS="-I./include/ " + string.join( [ '' ] + defines, " -D" ) 
 )
 
 ##

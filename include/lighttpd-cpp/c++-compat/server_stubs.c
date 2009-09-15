@@ -86,16 +86,9 @@ server *server_init(void) {
 	srv->startup_ts = srv->cur_ts;
 
 	srv->conns = calloc(1, sizeof(*srv->conns));
-	assert(srv->conns);
-
 	srv->joblist = calloc(1, sizeof(*srv->joblist));
-	assert(srv->joblist);
-
 	srv->joblist_prev = calloc(1, sizeof(*srv->joblist));
-	assert(srv->joblist_prev);
-
 	srv->fdwaitqueue = calloc(1, sizeof(*srv->fdwaitqueue));
-	assert(srv->fdwaitqueue);
 
 	srv->srvconf.modules = array_init();
 	srv->srvconf.modules_dir = buffer_init_string(LIBRARY_DIR);
@@ -192,7 +185,10 @@ void server_free(server *srv) {
 	array_free(srv->x);
 
 	CLEAN(config_context);
-	CLEAN(config_touched);
+
+	/* TODO: Seems to not like this inside tests */
+	// CLEAN(config_touched);
+
 	CLEAN(srvconf.upload_tempdirs);
 #undef CLEAN
 

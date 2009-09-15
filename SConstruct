@@ -76,7 +76,7 @@ lighttpd_list = SharedLibrary \
 ( 
 	'lib/lighttpd', 
 	library_sources, 
-	CCFLAGS="-I./include/ " + string.join( [ '' ] + defines, " -D" ) 
+	CCFLAGS="-g -I./include/ " + string.join( [ '' ] + defines, " -D" ) 
 )
 
 ##
@@ -104,7 +104,7 @@ Program \
 (
 	'src/tests/mod_blank_tests',
 	'src/tests/mod_blank_tests.cpp',
-	CCFLAGS="-I./include/ " + string.join( [ '' ] + defines, " -D" ), LIBPATH=[ "./lib/" ], 
+	CCFLAGS="-g -I./include/ " + string.join( [ '' ] + defines, " -D" ), LIBPATH=[ "./lib/" ], 
 	LIBS=[ "gtest_main", lighttpd_list, mod_blank_list, "dl"  ]
 )
 

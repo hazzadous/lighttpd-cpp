@@ -1,3 +1,17 @@
+/**
+ * A C++ compatible version of lighttpd/base.h.  Certain things are
+ * not compatible in the original, such as types and variables sharing names.
+ *
+ * This file contains the following changes:
+ *
+ *  * type http_req -> type http_req_t
+ *  * type request -> type request_t
+ *  * type response -> type response_t
+ *  * type physical -> type physical_t
+ *  * type stat_cache_t-> type stat_cache_t
+ *
+ */
+
 #ifndef _LIGHTTPD_CPP_BASE_COMPAT_H_
 #define _LIGHTTPD_CPP_BASE_COMPAT_H_
 
@@ -5,7 +19,7 @@
 #include <sys/stat.h>
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+#include <lighttpd/config.h>
 #endif
 
 #include <limits.h>
@@ -74,7 +88,6 @@
 #define environ (* _NSGetEnviron())
 #elif !defined(_WIN32)
 extern char **environ;
-#include <unistd.h>
 #endif
 
 /* for solaris 2.5 and NetBSD 1.3.x */
@@ -85,7 +98,7 @@ typedef int socklen_t;
 /* solaris and NetBSD 1.3.x again */
 #if (!defined(HAVE_STDINT_H)) && (!defined(HAVE_INTTYPES_H)) && (!defined(uint32_t))
 /* # define uint32_t u_int32_t */
-typedef unsigned __int32 uint32_t; 
+typedef unsigned __int32 uint32_t;
 #endif
 
 
@@ -200,7 +213,7 @@ typedef struct {
 
 typedef struct {
 	off_t   content_length;
-	int     keep_alive;               /* used by the subrequests in proxy, cgi and fcgi to say whether the subrequest was keep-alive or not */
+	int     keep_alive;               /* used by the subrequests in proxy, cgi and fcgi to say whether the subrequest_t was keep-alive or not */
 
 	array  *headers;
 
@@ -210,12 +223,16 @@ typedef struct {
 } response_t;
 
 typedef struct {
-	buffer *scheme;
+	buffer *scheme; /* scheme without colon or slashes ( "http" or "https" ) */
+
+	/* authority with optional portnumber ("site.name" or "site.name:8080" ) NOTE: without "username:password@" */
 	buffer *authority;
+
+	/* path including leading slash ("/" or "/index.html") - urldecoded, and sanitized  ( buffer_path_simplify() && buffer_urldecode_path() ) */
 	buffer *path;
-	buffer *path_raw;
-	buffer *query;
-} request_uri_t;
+	buffer *path_raw; /* raw path, as sent from client. no urldecoding or path simplifying */
+	buffer *query; /* querystring ( everything after "?", ie: in "/index.php?foo=1", query is "foo=1" ) */
+} request_uri;
 
 typedef struct {
 	buffer *path;
@@ -295,6 +312,8 @@ typedef struct {
 	unsigned short log_response_header;
 	unsigned short log_condition_handling;
 	unsigned short log_condition_cache_handling;
+	unsigned short log_ssl_noise;
+	unsigned short log_timeouts;
 
 
 	/* server wide */
@@ -341,12 +360,12 @@ typedef struct {
  * read before write as we use this later */
 typedef enum {
 	CON_STATE_CONNECT,         /** we are wait for a connect */
-	CON_STATE_REQUEST_START,   /** after the connect, the request is initialized, keep-alive starts here again */
+	CON_STATE_REQUEST_START,   /** after the connect, the request_t is initialized, keep-alive starts here again */
 	CON_STATE_READ_REQUEST_HEADER,   /** loop in the read-request-header until the full header is received */
 	CON_STATE_VALIDATE_REQUEST_HEADER,   /** validate the request-header */
-	CON_STATE_HANDLE_REQUEST_HEADER, /** find a handler for the request */
-	CON_STATE_READ_REQUEST_CONTENT,  /** forward the request content to the handler */
-	CON_STATE_HANDLE_RESPONSE_HEADER, /** the backend bounces the response back to the client */
+	CON_STATE_HANDLE_REQUEST_HEADER, /** find a handler for the request_t */
+	CON_STATE_READ_REQUEST_CONTENT,  /** forward the request_t content to the handler */
+	CON_STATE_HANDLE_RESPONSE_HEADER, /** the backend bounces the response_t back to the client */
 	CON_STATE_WRITE_RESPONSE_HEADER,
 	CON_STATE_WRITE_RESPONSE_CONTENT,
 	CON_STATE_RESPONSE_END,
@@ -399,8 +418,8 @@ typedef struct {
 	chunkqueue *recv;            /* the request-content, without encoding */
 
 	filter_chain *send_filters;  /* the chain of filters to apply to response-content. */
-	chunkqueue *send_raw;        /* the full response (HTTP-Header + compression + chunking ) */
-	chunkqueue *recv_raw;        /* the full request (HTTP-Header + chunking ) */
+	chunkqueue *send_raw;        /* the full response_t (HTTP-Header + compression + chunking ) */
+	chunkqueue *recv_raw;        /* the full request_t (HTTP-Header + chunking ) */
 
 	int traffic_limit_reached;
 
@@ -414,12 +433,12 @@ typedef struct {
 	sock_addr dst_addr;
 	buffer *dst_addr_buf;
 
-	/* request */
+	/* request_t */
 	buffer *parse_request;
 
 	http_req_t *http_req;
 	request_t  request;
-	request_uri_t uri;
+	request_uri uri;
 	physical_t physical;
 	response_t response;
 
@@ -428,7 +447,7 @@ typedef struct {
 	buffer *authed_user;
 	array  *environment; /* used to pass lighttpd internal stuff to the FastCGI/CGI apps, setenv does that */
 
-	/* response */
+	/* response_t */
 	int    got_response;
 
 	int    in_joblist;
@@ -548,6 +567,7 @@ typedef struct {
 
 	buffer *errorlog_file;
 	unsigned short errorlog_use_syslog;
+	buffer *breakagelog_file;
 
 	unsigned short max_stat_threads;
 	unsigned short max_read_threads;
@@ -564,6 +584,7 @@ typedef enum {
 	NETWORK_BACKEND_POSIX_AIO,
 	NETWORK_BACKEND_GTHREAD_AIO,
 	NETWORK_BACKEND_GTHREAD_SENDFILE,
+	NETWORK_BACKEND_GTHREAD_FREEBSD_SENDFILE,
 
 	NETWORK_BACKEND_FREEBSD_SENDFILE,
 	NETWORK_BACKEND_SOLARIS_SENDFILEV,
@@ -646,6 +667,9 @@ typedef struct server {
 	time_t last_generated_debug_ts;
 	time_t startup_ts;
 
+	char entropy[8]; /* from /dev/[u]random if possible, otherwise rand() */
+	char is_real_entropy; /* whether entropy is from /dev/[u]random */
+
 	buffer *ts_debug_str;
 	buffer *ts_date_str;
 
@@ -666,7 +690,7 @@ typedef struct server {
 	connections *joblist_prev;
 	connections *fdwaitqueue;
 
-	stat_cache_t  *stat_cache;
+	stat_cache_t *stat_cache;
 
 	fdevent_handler_t event_handler;
 
