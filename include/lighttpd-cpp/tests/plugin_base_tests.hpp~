@@ -11,7 +11,7 @@
 class plugin_base_tests : public lighttpd_tests
 {
 	public:
-		plugin_base_tests( const std::string config ) : lighttpd_tests( config )
+		plugin_base_tests( std::string config ) : lighttpd_tests( config )
 		{
 		}
 
