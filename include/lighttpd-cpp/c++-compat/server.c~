@@ -1,9 +1,0 @@
-/**
- * For the tests, we need certain thing in server.c that
- * are not exposed by server.h.
- */
-
-#include "server.h"
-
-#include <lighttpd/server.c>
-
