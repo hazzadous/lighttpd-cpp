@@ -41,12 +41,11 @@
 #include <lighttpd/buffer.h>
 #include <lighttpd/array.h>
 #include <lighttpd/chunk.h>
-#include <lighttpd/filter.h>
 #include <lighttpd/keyvalue.h>
 #include <lighttpd/settings.h>
 #include <lighttpd/fdevent.h>
 #include <lighttpd/sys-socket.h>
-#include "http_req.h"
+//#include "http_req.h"
 #include <lighttpd/etag.h>
 
 #if defined HAVE_LIBSSL && defined HAVE_OPENSSL_SSL_H
@@ -108,281 +107,6 @@ typedef unsigned __int32 uint32_t;
 
 #include <lighttpd/settings.h>
 
-typedef enum {
-	TIME_CONNECTION_ACCEPT,
-	TIME_REQUEST_START,
-	TIME_BACKEND_CONNECT,
-
-	TIME_BACKEND_SEND_HEADER_START,
-	TIME_BACKEND_SEND_HEADER_END,
-	TIME_BACKEND_SEND_CONTENT_START,
-	TIME_BACKEND_SEND_CONTENT_END,
-
-	TIME_BACKEND_RECV_HEADER_START,
-	TIME_BACKEND_RECV_HEADER_END,
-	TIME_BACKEND_RECV_CONTENT_START,
-	TIME_BACKEND_RECV_CONTENT_END,
-
-	TIME_BACKEND_DISCONNECT,
-
-	TIME_SEND_HEADER_START,
-	TIME_SEND_HEADER_END,
-
-	TIME_SEND_CONTENT_START,
-	
-	TIME_SEND_ASYNC_READ_QUEUED, /* for async-io read */
-	TIME_SEND_ASYNC_READ_START, /* for async-io read */
-	TIME_SEND_ASYNC_READ_END, /* for async-io read */
-	TIME_SEND_ASYNC_READ_END_QUEUED, /* for async-io read */
-
-	TIME_SEND_WRITE_START,
-	TIME_SEND_WRITE_END,
-	
-	TIME_SEND_CONTENT_END,
-
-	TIME_REQUEST_END,
-	TIME_CONNECTION_CLOSE,
-
-	TIME_LAST_ELEMENT
-} connection_time_field_t;
-
-typedef enum { T_CONFIG_UNSET,
-		T_CONFIG_STRING,
-		T_CONFIG_SHORT,
-		T_CONFIG_INT,
-		T_CONFIG_BOOLEAN,
-		T_CONFIG_ARRAY,
-		T_CONFIG_LOCAL,
-		T_CONFIG_DEPRECATED,
-		T_CONFIG_UNSUPPORTED
-} config_values_type_t;
-
-typedef enum { T_CONFIG_SCOPE_UNSET,
-		T_CONFIG_SCOPE_SERVER,
-		T_CONFIG_SCOPE_CONNECTION
-} config_scope_type_t;
-
-typedef struct {
-	const char *key;
-	void *destination;
-
-	config_values_type_t type;
-	config_scope_type_t scope;
-} config_values_t;
-
-typedef enum { DIRECT, EXTERNAL } connection_type;
-
-typedef struct {
-	char *key;
-	connection_type type;
-	char *value;
-} request_handler;
-
-typedef struct {
-	char *key;
-	char *host;
-	unsigned short port;
-	int used;
-	short factor;
-} fcgi_connections;
-
-typedef struct {
-	/** HEADER */
-	/* the request-line */
-	buffer *request;
-	buffer *uri;
-
-	buffer *orig_uri;
-
-	http_method_t  http_method;
-	http_version_t http_version;
-
-	buffer *http_host;
-
-	array  *headers;
-
-	/* CONTENT */
-	off_t   content_length; /* returned by strtoul() */
-
-	/* internal representation */
-	int     accept_encoding;
-
-	/* internal */
-	buffer *pathinfo;
-} request_t;
-
-typedef struct {
-	off_t   content_length;
-	int     keep_alive;               /* used by the subrequests in proxy, cgi and fcgi to say whether the subrequest_t was keep-alive or not */
-
-	array  *headers;
-
-	enum {
-		HTTP_TRANSFER_ENCODING_IDENTITY, HTTP_TRANSFER_ENCODING_CHUNKED
-	} transfer_encoding;
-} response_t;
-
-typedef struct {
-	buffer *scheme; /* scheme without colon or slashes ( "http" or "https" ) */
-
-	/* authority with optional portnumber ("site.name" or "site.name:8080" ) NOTE: without "username:password@" */
-	buffer *authority;
-
-	/* path including leading slash ("/" or "/index.html") - urldecoded, and sanitized  ( buffer_path_simplify() && buffer_urldecode_path() ) */
-	buffer *path;
-	buffer *path_raw; /* raw path, as sent from client. no urldecoding or path simplifying */
-	buffer *query; /* querystring ( everything after "?", ie: in "/index.php?foo=1", query is "foo=1" ) */
-} request_uri;
-
-typedef struct {
-	buffer *path;
-	buffer *basedir; /* path = "(basedir)(.*)" */
-
-	buffer *doc_root; /* path = doc_root + rel_path */
-	buffer *rel_path;
-
-	buffer *etag;
-} physical_t;
-
-typedef struct {
-	buffer *name;
-	buffer *etag;
-
-	struct stat st;
-
-	time_t stat_ts;
-
-	enum {
-		STAT_CACHE_ENTRY_UNSET, 
-		STAT_CACHE_ENTRY_ASYNC_STAT, 
-		STAT_CACHE_ENTRY_STAT_FINISHED
-	} state;
-
-#ifdef HAVE_LSTAT
-	char is_symlink;
-#endif
-
-#if defined(HAVE_SYS_INOTIFY_H)
-	int    dir_version; /* when this entry was created the dir had this version */
-	int    dir_ndx;
-#endif
-
-	buffer *content_type;
-} stat_cache_entry;
-
-typedef struct {
-#ifdef HAVE_GLIB_H
-	GHashTable *files; /* a HashTable of stat_cache_entries for the files */
-	GHashTable *dirs;  /* a HashTable of stat_cache_entries for the dirs */
-#endif
-
-	buffer *dir_name;  /* for building the dirname from the filename */
-	buffer *hash_key;  /* tmp-buf for building the hash-key */
-
-#if defined(HAVE_SYS_INOTIFY_H)
-	iosocket *sock;    /* socket to the inotify fd (this should be in a backend struct */
-#endif
-} stat_cache_t;
-
-typedef struct {
-	array *mimetypes;
-
-	/* virtual-servers */
-	buffer *document_root;
-	buffer *server_name;
-	buffer *error_handler;
-	buffer *server_tag;
-	buffer *dirlist_encoding;
-	buffer *errorfile_prefix;
-
-	unsigned short max_keep_alive_requests;
-	unsigned short max_keep_alive_idle;
-	unsigned short max_read_idle;
-	unsigned short max_write_idle;
-	unsigned short max_connection_idle;
-	unsigned short use_xattr;
-	unsigned short follow_symlink;
-	unsigned short range_requests;
-
-	/* debug */
-
-	unsigned short log_file_not_found;
-	unsigned short log_request_header;
-	unsigned short log_request_handling;
-	unsigned short log_response_header;
-	unsigned short log_condition_handling;
-	unsigned short log_condition_cache_handling;
-	unsigned short log_ssl_noise;
-	unsigned short log_timeouts;
-
-
-	/* server wide */
-	buffer *ssl_pemfile;
-	buffer *ssl_ca_file;
-	buffer *ssl_cipher_list;
-	unsigned short ssl_use_sslv2;
-	unsigned short use_ipv6;
-	unsigned short is_ssl;
-	unsigned short allow_http11;
-	unsigned short etag_use_inode;
-	unsigned short etag_use_mtime;
-	unsigned short etag_use_size;
-	unsigned short force_lowercase_filenames; /* if the FS is case-insensitive, force all files to lower-case */
-	unsigned int max_request_size;
-
-	unsigned short kbytes_per_second; /* connection kb/s limit */
-	
-	/* configside */
-	unsigned short global_kbytes_per_second; /*  */
-
-	off_t  global_bytes_per_second_cnt;
-	/* server-wide traffic-shaper
-	 *
-	 * each context has the counter which is inited once
-	 * per second by the global_kbytes_per_second config-var
-	 *
-	 * as soon as global_kbytes_per_second gets below 0
-	 * the connected conns are "offline" a little bit
-	 *
-	 * the problem:
-	 * we somehow have to lose our "we are writable" signal
-	 * on the way.
-	 *
-	 */
-	off_t *global_bytes_per_second_cnt_ptr; /*  */
-
-#ifdef USE_OPENSSL
-	SSL_CTX *ssl_ctx;
-#endif
-} specific_config;
-
-/* the order of the items should be the same as they are processed
- * read before write as we use this later */
-typedef enum {
-	CON_STATE_CONNECT,         /** we are wait for a connect */
-	CON_STATE_REQUEST_START,   /** after the connect, the request_t is initialized, keep-alive starts here again */
-	CON_STATE_READ_REQUEST_HEADER,   /** loop in the read-request-header until the full header is received */
-	CON_STATE_VALIDATE_REQUEST_HEADER,   /** validate the request-header */
-	CON_STATE_HANDLE_REQUEST_HEADER, /** find a handler for the request_t */
-	CON_STATE_READ_REQUEST_CONTENT,  /** forward the request_t content to the handler */
-	CON_STATE_HANDLE_RESPONSE_HEADER, /** the backend bounces the response_t back to the client */
-	CON_STATE_WRITE_RESPONSE_HEADER,
-	CON_STATE_WRITE_RESPONSE_CONTENT,
-	CON_STATE_RESPONSE_END,
-	CON_STATE_ERROR,
-	CON_STATE_CLOSE
-} connection_state_t;
-
-typedef enum { COND_RESULT_UNSET, COND_RESULT_FALSE, COND_RESULT_TRUE } cond_result_t;
-typedef struct {
-	cond_result_t result;
-	int patterncount;
-	int matches[3 * 10];
-	buffer *comp_value; /* just a pointer */
-
-	comp_key_t comp_type;
-} cond_cache_t;
-
 typedef struct {
 	connection_state_t state;
 
@@ -403,23 +127,23 @@ typedef struct {
 				      * this is self-protection
 				      */
 
-	iosocket *sock;
+	int fd;                      /* the FD for this connection */
+	int fde_ndx;                 /* index for the fdevent-handler */
 	int ndx;                     /* reverse mapping to server->connection[ndx] */
 
 	/* fd states */
 	int is_readable;
 	int is_writable;
 
-	int     keep_alive;          /* only request.c can enable it, all others just disable */
+	int keep_alive;              /* only request.c can enable it, all other just disable */
+	int keep_alive_idle;         /* remember max_keep_alive_idle from config */
 
 	int file_started;
+	int file_finished;
 
-	chunkqueue *send;            /* the response-content before filters are applied */
-	chunkqueue *recv;            /* the request-content, without encoding */
-
-	filter_chain *send_filters;  /* the chain of filters to apply to response-content. */
-	chunkqueue *send_raw;        /* the full response_t (HTTP-Header + compression + chunking ) */
-	chunkqueue *recv_raw;        /* the full request_t (HTTP-Header + chunking ) */
+	chunkqueue *write_queue;      /* a large queue for low-level write ( HTTP response ) [ file, mem ] */
+	chunkqueue *read_queue;       /* a small queue for low-level read ( HTTP request ) [ mem ] */
+	chunkqueue *request_content_queue; /* takes request-content into tempfile if necessary [ tempfile, mem ]*/
 
 	int traffic_limit_reached;
 
@@ -433,21 +157,21 @@ typedef struct {
 	sock_addr dst_addr;
 	buffer *dst_addr_buf;
 
-	/* request_t */
+	/* request */
 	buffer *parse_request;
+	unsigned int parsed_response; /* bitfield which contains the important header-fields of the parsed response header */
 
-	http_req_t *http_req;
-	request_t  request;
+	request  request;
 	request_uri uri;
-	physical_t physical;
-	response_t response;
+	physical physical;
+	response response;
 
 	size_t header_len;
 
 	buffer *authed_user;
 	array  *environment; /* used to pass lighttpd internal stuff to the FastCGI/CGI apps, setenv does that */
 
-	/* response_t */
+	/* response */
 	int    got_response;
 
 	int    in_joblist;
@@ -468,266 +192,84 @@ typedef struct {
 
 	void *srv_socket;   /* reference to the server-socket (typecast to server_socket) */
 
+#ifdef USE_OPENSSL
+	SSL *ssl;
+# ifndef OPENSSL_NO_TLSEXT
+	buffer *tlsext_server_name;
+# endif
+#endif
 	/* etag handling */
 	etag_flags_t etag_flags;
 
+	int conditional_is_valid[COMP_LAST_ELEMENT]; 
+} connection_t;
 
+typedef struct {
+  /** HEADER */
+  /* the request-line */
+  buffer *request;
+  buffer *uri;
+
+  buffer *orig_uri;
+
+  http_method_t  http_method;
+  http_version_t http_version;
+
+  buffer *request_line;
+
+  /* strings to the header */
+  buffer *http_host; /* not alloced */
+  const char   *http_range;
+  const char   *http_content_type;
+  const char   *http_if_modified_since;
+  const char   *http_if_none_match;
+
+  array  *headers;
+
+  /* CONTENT */
+  size_t content_length; /* returned by strtoul() */
+
+  /* internal representation */
+  int     accept_encoding;
+
+  /* internal */
+  buffer *pathinfo;
+} request_t;
+
+typedef struct {
+	off_t   content_length;
+	int     keep_alive;               /* used by the subrequests in proxy, cgi and fcgi to say whether the subrequest_t was keep-alive or not */
+
+	array  *headers;
+
+	enum {
+		HTTP_TRANSFER_ENCODING_IDENTITY, HTTP_TRANSFER_ENCODING_CHUNKED
+	} transfer_encoding;
+} response_t;
+
+typedef struct {
+	buffer *path;
+	buffer *basedir; /* path = "(basedir)(.*)" */
+
+	buffer *doc_root; /* path = doc_root + rel_path */
+	buffer *rel_path;
+
+	buffer *etag;
+} physical_t;
+
+typedef struct {
 #ifdef HAVE_GLIB_H
-	GTimeVal timestamps[TIME_LAST_ELEMENT]; /**< used by timing.h */
+	GHashTable *files; /* a HashTable of stat_cache_entries for the files */
+	GHashTable *dirs;  /* a HashTable of stat_cache_entries for the dirs */
 #endif
 
-	int conditional_is_valid[COMP_LAST_ELEMENT];
-} connection;
+	buffer *dir_name;  /* for building the dirname from the filename */
+	buffer *hash_key;  /* tmp-buf for building the hash-key */
 
-typedef struct {
-	connection **ptr;
-	size_t size;
-	size_t used;
-} connections;
-
-
-#ifdef HAVE_IPV6
-typedef struct {
-	int family;
-	union {
-		struct in6_addr ipv6;
-		struct in_addr  ipv4;
-	} addr;
-	char b2[INET6_ADDRSTRLEN + 1];
-	time_t ts;
-} inet_ntop_cache_type;
+#if defined(HAVE_SYS_INOTIFY_H)
+	iosocket *sock;    /* socket to the inotify fd (this should be in a backend struct */
 #endif
-
-
-typedef struct {
-	buffer *uri;
-	time_t mtime;
-	int http_status;
-} realpath_cache_type;
-
-typedef struct {
-	time_t  mtime;  /* the key */
-	buffer *str;    /* a buffer for the string represenation */
-} mtime_cache_type;
-
-typedef struct {
-	void  *ptr;
-	size_t used;
-	size_t size;
-} buffer_plugin;
-
-typedef enum {
-	NETWORK_STATUS_UNSET,
-	NETWORK_STATUS_SUCCESS,
-	NETWORK_STATUS_FATAL_ERROR,
-	NETWORK_STATUS_CONNECTION_CLOSE,
-	NETWORK_STATUS_WAIT_FOR_EVENT,
-	NETWORK_STATUS_WAIT_FOR_AIO_EVENT,
-	NETWORK_STATUS_WAIT_FOR_FD,
-	NETWORK_STATUS_INTERRUPTED
-} network_status_t;
-
-typedef struct {
-	unsigned short port;
-	buffer *bindhost;
-
-	unsigned short dont_daemonize;
-	unsigned short daemonize_on_shutdown;
-	buffer *changeroot;
-	buffer *username;
-	buffer *groupname;
-
-	buffer *pid_file;
-
-	buffer *event_handler;
-
-	buffer *modules_dir;
-	buffer *network_backend;
-	array *modules;
-	array *upload_tempdirs;
-
-	unsigned short use_noatime;
-
-	unsigned short max_worker;
-	unsigned short max_fds;
-	unsigned short max_conns;
-	unsigned int max_request_size;
-
-	unsigned short log_request_header_on_error;
-	unsigned short log_state_handling;
-	unsigned short log_timing;
-
-	enum { STAT_CACHE_ENGINE_UNSET,
-			STAT_CACHE_ENGINE_NONE,
-			STAT_CACHE_ENGINE_SIMPLE,
-			STAT_CACHE_ENGINE_FAM,
-			STAT_CACHE_ENGINE_INOTIFY
-	} stat_cache_engine;
-	unsigned short enable_cores;
-
-	buffer *errorlog_file;
-	unsigned short errorlog_use_syslog;
-	buffer *breakagelog_file;
-
-	unsigned short max_stat_threads;
-	unsigned short max_read_threads;
-} server_config;
-
-typedef enum {
-	NETWORK_BACKEND_UNSET,
-
-	NETWORK_BACKEND_WRITE,
-	NETWORK_BACKEND_WRITEV,
-
-	NETWORK_BACKEND_LINUX_SENDFILE,
-	NETWORK_BACKEND_LINUX_AIO_SENDFILE,
-	NETWORK_BACKEND_POSIX_AIO,
-	NETWORK_BACKEND_GTHREAD_AIO,
-	NETWORK_BACKEND_GTHREAD_SENDFILE,
-	NETWORK_BACKEND_GTHREAD_FREEBSD_SENDFILE,
-
-	NETWORK_BACKEND_FREEBSD_SENDFILE,
-	NETWORK_BACKEND_SOLARIS_SENDFILEV,
-
-	NETWORK_BACKEND_WIN32_SEND,
-	NETWORK_BACKEND_WIN32_TRANSMITFILE,
-
-} network_backend_t;
-
-
-typedef struct {
-	sock_addr addr;
-	iosocket *sock;
-
-	buffer *ssl_pemfile;
-	buffer *ssl_ca_file;
-	buffer *ssl_cipher_list;
-	unsigned short ssl_use_sslv2;
-	unsigned short use_ipv6;
-	unsigned short is_ssl;
-
-	buffer *srv_token;
-
-#ifdef USE_OPENSSL
-	SSL_CTX *ssl_ctx;
-#endif
-} server_socket;
-
-typedef struct {
-	server_socket **ptr;
-
-	size_t size;
-	size_t used;
-} server_socket_array;
-
-typedef struct server {
-	server_socket_array srv_sockets;
-
-	fdevents *ev, *ev_ins;
-
-	buffer_plugin plugins;
-	void *plugin_slots;
-
-	/* counters */
-	int con_opened;
-	int con_read;
-	int con_written;
-	int con_closed;
-
-	int ssl_is_init;
-
-	int max_fds;    /* max possible fds */
-	int sockets_disabled;
-
-	size_t max_conns;
-
-	/* buffers */
-	buffer *parse_full_path;
-	buffer *response_header;
-	buffer *response_range;
-	buffer *tmp_buf;
-
-	buffer *tmp_chunk_len;
-
-	buffer *empty_string; /* is necessary for cond_match */
-
-	buffer *cond_check_buf;
-
-	/* caches */
-#ifdef HAVE_IPV6
-	inet_ntop_cache_type inet_ntop_cache[INET_NTOP_CACHE_MAX];
-#endif
-	mtime_cache_type mtime_cache[FILE_CACHE_MAX];
-
-	array *split_vals;
-
-	/* Timestamps */
-	time_t cur_ts;
-	time_t last_generated_date_ts;
-	time_t last_generated_debug_ts;
-	time_t startup_ts;
-
-	char entropy[8]; /* from /dev/[u]random if possible, otherwise rand() */
-	char is_real_entropy; /* whether entropy is from /dev/[u]random */
-
-	buffer *ts_debug_str;
-	buffer *ts_date_str;
-
-	/* config-file */
-	array *config;
-	array *config_touched;
-
-	array *config_context;
-	specific_config **config_storage;
-
-	server_config  srvconf;
-
-	short unsigned config_deprecated;
-	short unsigned config_unsupported;
-
-	connections *conns;
-	connections *joblist;
-	connections *joblist_prev;
-	connections *fdwaitqueue;
-
-	stat_cache_t *stat_cache;
-
-	fdevent_handler_t event_handler;
-
-	network_status_t (* network_backend_write)(struct server *srv, connection *con, iosocket *sock, chunkqueue *cq);
-	network_status_t (* network_backend_read)(struct server *srv, connection *con, iosocket *sock, chunkqueue *cq);
-#ifdef USE_OPENSSL
-	network_status_t (* network_ssl_backend_write)(struct server *srv, connection *con, iosocket *sock, chunkqueue *cq);
-	network_status_t (* network_ssl_backend_read)(struct server *srv, connection *con, iosocket *sock, chunkqueue *cq);
-#endif
-
-#ifdef HAVE_PWD_H
-	uid_t uid;
-	gid_t gid;
-#endif
-#ifdef USE_GTHREAD
-#ifdef USE_LINUX_AIO_SENDFILE
-	io_context_t linux_io_ctx;
-
-	struct iocb *linux_io_iocbs;
-
-#endif
-#ifdef USE_POSIX_AIO
-	struct aiocb *posix_aio_iocbs;
-#endif
-
-	GAsyncQueue *stat_queue; /* send a stat_job into this queue and joblist_queue will get a wakeup when the stat is finished */
-	GAsyncQueue *joblist_queue;
-	GAsyncQueue *aio_write_queue;
-
-	int wakeup_pipe[2];
-	iosocket *wakeup_iosocket;
-#endif
-	network_backend_t network_backend;
-	int is_shutdown;
-} server;
-
-int server_out_of_fds(server *srv, connection *con);
+} stat_cache_t;
 
 LI_EXPORT unsigned short sock_addr_get_port(sock_addr *addr); /* configfile-glue.c */
 

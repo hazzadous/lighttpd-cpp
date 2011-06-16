@@ -20,43 +20,6 @@ env = Environment( )
 # Used to join defines later on.
 import string
 
-lighttpd_include = 'include/lighttpd/'
-
-# First we need to build lemon, some parser that generates
-# .c and .h files from .y files.  Never seen it before.
-lemon_list = Program( '%s/lemon' % lighttpd_include, '%s/lemon.c' % lighttpd_include )
-
-# Now we have this lemon thingy lets do stuff with the .y files.
-lemon_files = Glob( '%s/*.y' % lighttpd_include )
-lemon_list = [ ]
-for lemon_file in lemon_files:
-	lemon = Command( '', '', 'cd %s; ./lemon %s' % ( lighttpd_include, lemon_file.name ) )
-	lemon_list += lemon
-	Requires( lemon, '%s/lemon' % lighttpd_include )
-
-# Select all the source files from lighttpd and remove select ones.
-# I'm too lazy to pick out all the ones that are needed.
-# There are probably far too many things in lighttpd.a after this.
-source_files = Glob( '%s/*.c' % lighttpd_include )
-Requires( source_files, lemon_list )
-
-# filenames to exclude in 
-exclude_filenames = \
-[ 	
-	'lemon.c', 
-	'lempar.c', 
-	'splaytree.c', 
-	'xgetopt.c',
-	'fcgi-stat-accel.c',
-]
-
-exclude_files = [ File( '%s/%s' % ( lighttpd_include, filename ) ) for filename in exclude_filenames ] + \
-				Glob( '%s/*_test.c' % lighttpd_include ) + \
-				Glob( '%s/mod_*.c' % lighttpd_include ) + \
-				[ File( 'include/lighttpd-cpp/server-tests.c' ) ]
-
-library_sources = list( set( source_files ) - set( exclude_files ) ) + [ File( 'include/lighttpd-cpp/c++-compat/server_stubs.c' ), ]
-
 defines = \
 [
 	'HAVE_SOCKLEN_T', 
@@ -71,13 +34,6 @@ defines = \
 	'LIBRARY_DIR=\\"./lib/\\"'
 ]
 
-# Make our lighttpd library
-lighttpd_list = SharedLibrary \
-( 
-	'lib/lighttpd', 
-	library_sources, 
-	CCFLAGS="-g -I./include/ " + string.join( [ '' ] + defines, " -D" ) 
-)
 
 ##
 # Compile our empty module.
@@ -97,7 +53,7 @@ Program \
 	'src/tests/datatype_helper_tests',
 	'src/tests/datatype_helper_tests.cpp',
 	CCFLAGS="-I./include/ " + string.join( [ '' ] + defines, " -D" ), LIBPATH=[ "./lib/" ], 
-	LIBS=[ "gtest_main", lighttpd_list, mod_blank_list, "dl"  ]
+	LIBS=[ "gtest_main", mod_blank_list, "dl"  ]
 )
 
 Program \
@@ -105,7 +61,7 @@ Program \
 	'src/tests/handler_setter_tests',
 	'src/tests/handler_setter_tests.cpp',
 	CCFLAGS="-I./include/ " + string.join( [ '' ] + defines, " -D" ), LIBPATH=[ "./lib/" ], 
-	LIBS=[ "gtest_main", lighttpd_list, mod_blank_list, "dl"  ]
+	LIBS=[ "gtest_main", mod_blank_list, "dl"  ]
 )
 
 Program \
@@ -113,6 +69,6 @@ Program \
 	'src/tests/mod_blank_tests',
 	'src/tests/mod_blank_tests.cpp',
 	CCFLAGS="-g -I./include/ " + string.join( [ '' ] + defines, " -D" ), LIBPATH=[ "./lib/" ], 
-	LIBS=[ "gtest_main", lighttpd_list, mod_blank_list, "dl"  ]
+	LIBS=[ "gtest_main", mod_blank_list, "dl"  ]
 )
 

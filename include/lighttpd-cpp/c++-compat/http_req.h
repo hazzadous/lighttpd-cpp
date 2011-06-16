@@ -15,7 +15,6 @@
 
 #include <lighttpd/array.h>
 #include <lighttpd/chunk.h>
-#include <lighttpd/http_parser.h>
 
 typedef struct {
 	int protocol;   /* http/1.0, http/1.1 */
